@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "gpt3norm"
+version = "0.1.0"
+description = "Normalization functions powered by GPT-3"
+authors = ["Madison May <madison@indico.io>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8.1"
+openai = "^0.26.4"
+Jinja2 = "^3.1.2"
+langchain = "^0.0.77"
+
+[tool.poetry.dev-dependencies]
+black = "^23.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

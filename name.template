@@ -1,0 +1,10 @@
+Format the following names as a list of python dictionaries of the form:
+[{ "given": str, "middle": str | None, "surname": str }]. 
+
+Be sure to handle compound surnames.
+
+Input:
+"{{name}}"
+
+Output:
+[{
