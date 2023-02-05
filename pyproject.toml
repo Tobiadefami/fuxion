@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "gpt3norm"
+name = "datasynth"
 version = "0.1.0"
-description = "Normalization functions powered by GPT-3"
+description = "Synthetic dataset generation functions powered by GPT-3"
 authors = ["Madison May <madison@indico.io>"]
 license = "MIT"
 
