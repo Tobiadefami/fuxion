@@ -1,16 +1,16 @@
 from pprint import pprint
 import sys
-from datasynth.pipelines import AddressTestPipeline, NameTestPipeline
-from datasynth.generators import AddressGenerator, NameGenerator
+from datasynth.pipelines import AddressTestPipeline, NameTestPipeline, PriceTestPipeline
+from datasynth.generators import AddressGenerator, NameGenerator, PriceGenerator
 from datasynth.normalizers import AddressNormalizer, NameNormalizer
 import typer
 
-pipelines = {"address": AddressTestPipeline, "name": NameTestPipeline}
-generators = {"address": AddressGenerator, "name": NameGenerator}
+pipelines = {"address": AddressTestPipeline, "name": NameTestPipeline, "price":PriceTestPipeline}
+generators = {"address": AddressGenerator, "name": NameGenerator, "price": PriceGenerator}
 
 
 def main(datatype: str = "address"):
-    chain = generators[sys.argv[1]]()
+    chain = pipelines[datatype]()
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(noop="true"))
 

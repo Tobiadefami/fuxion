@@ -10,7 +10,7 @@ from datasynth import TEMPLATE_DIR
 
 davinci = OpenAI(
     temperature=0.8,
-    cache=True,
+    cache=False,
 )
 
 
@@ -48,3 +48,7 @@ class AddressGenerator(GeneratorChain):
 
 class NameGenerator(GeneratorChain):
     datatype = "name"
+
+
+class PriceGenerator(GeneratorChain):
+    datatype = "price"

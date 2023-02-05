@@ -2,7 +2,7 @@ import json
 import ast
 from pprint import pprint
 import os
-
+import typer
 from pydantic import Field
 from langchain import OpenAI, PromptTemplate, LLMChain
 from langchain.cache import SQLiteCache
@@ -63,3 +63,23 @@ class NameNormalizer(NormalizerChain):
 
 class AddressNormalizer(NormalizerChain):
     datatype = "address"
+
+class PriceNormalizer(NormalizerChain):
+    datatype = "price"
+
+
+
+def main(datatype: str, example:str):
+
+    registry={
+        'name': NameNormalizer,
+        'address': AddressNormalizer,
+        'price': PriceNormalizer
+    }
+
+    chain = registry[datatype]()
+    pprint(chain.run(**{datatype: example}))
+    
+
+if __name__ == "__main__":
+    typer.run(main)
