@@ -27,10 +27,7 @@ class GeneratorChain(Chain):
             ).read(),
             validate_template=False,
         )
-        self.chain = LLMChain(
-            prompt=template,
-            llm=davinci,
-        )
+        self.chain = LLMChain(prompt=template, llm=davinci, verbose=True)
 
     @property
     def input_keys(self) -> list[str]:
