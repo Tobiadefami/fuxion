@@ -1,5 +1,4 @@
 from pprint import pprint
-import sys
 from datasynth.pipelines import AddressTestPipeline, NameTestPipeline, PriceTestPipeline
 from datasynth.generators import AddressGenerator, NameGenerator, PriceGenerator
 from datasynth.normalizers import AddressNormalizer, NameNormalizer

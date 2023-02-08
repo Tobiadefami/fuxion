@@ -8,7 +8,7 @@ from langchain import OpenAI, PromptTemplate, LLMChain
 from langchain.cache import SQLiteCache
 from langchain.chains.base import Chain
 import langchain
-
+from datasynth.base import BaseChain
 from datasynth import TEMPLATE_DIR
 
 langchain.llm_cache = SQLiteCache()
@@ -20,10 +20,9 @@ structured_davinci = OpenAI(
 )
 
 
-class NormalizerChain(Chain):
-    datatype: str
+class NormalizerChain(BaseChain):
     chain = Field(LLMChain, required=False)
-
+    chain_type = "normalizer"
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         template = PromptTemplate(
@@ -71,13 +70,7 @@ class PriceNormalizer(NormalizerChain):
 
 def main(datatype: str, example:str):
 
-    registry={
-        'name': NameNormalizer,
-        'address': AddressNormalizer,
-        'price': PriceNormalizer
-    }
-
-    chain = registry[datatype]()
+    chain = NormalizerChain.from_name(datatype)
     pprint(chain.run(**{datatype: example}))
     
 

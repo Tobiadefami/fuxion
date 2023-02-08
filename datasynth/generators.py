@@ -1,22 +1,24 @@
 import os
-
+from typing import ClassVar
 from pydantic import Field
 from langchain import LLMChain
-from langchain.chains.base import Chain
 from langchain import OpenAI
 from langchain import PromptTemplate
-
+import typer
 from datasynth import TEMPLATE_DIR
+from pprint import pprint
+from datasynth.base import BaseChain
 
 davinci = OpenAI(
-    temperature=0.8,
+    temperature = 0.8,
     cache=False,
 )
 
 
-class GeneratorChain(Chain):
-    datatype: str
+class GeneratorChain(BaseChain):
+
     chain = Field(LLMChain, required=False)
+    chain_type: ClassVar[str] = "generator"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,3 +54,13 @@ class NameGenerator(GeneratorChain):
 
 class PriceGenerator(GeneratorChain):
     datatype = "price"
+
+
+def main(datatype: str):
+    
+    chain = GeneratorChain.from_name(datatype)
+    # No-op thing is a hack, not sure why it won't let me run with no args
+    pprint(chain.run(noop="true"))
+
+if __name__ == "__main__":
+    typer.run(main)
