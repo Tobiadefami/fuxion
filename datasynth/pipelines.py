@@ -1,4 +1,3 @@
-from langchain.chains.base import Chain
 import typer
 from datasynth.generators import *
 from datasynth.normalizers import *
@@ -20,7 +19,8 @@ class TestPipeline(BaseChain):
     def output_keys(self) -> List[str]:
         return ["outputs"]
 
-    def _call(self, inputs: dict[str, str], k:int = 30) -> dict[str, List[dict[str, Any | str]]]:
+    @classmethod
+    def _call(self, inputs: dict[str, str], k:int=30) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
         while len(generated) < k:
             generated.extend(self.generator.run(**inputs))
@@ -39,19 +39,19 @@ class TestPipeline(BaseChain):
 
 class AddressTestPipeline(TestPipeline):
     datatype = "address"
-    generator = AddressGenerator()
-    discriminator = AddressNormalizer()
+    generator = GeneratorChain.from_name("address")
+    discriminator = NormalizerChain.from_name("address")
 
 
 class NameTestPipeline(TestPipeline):
     datatype = "name"
-    generator = NameGenerator()
-    discriminator = NameNormalizer()
+    generator = GeneratorChain.from_name("name")
+    discriminator = NormalizerChain.from_name("name")
 
 class PriceTestPipeline(TestPipeline):
     datatype = "price"
-    generator = PriceGenerator()
-    discriminator = PriceNormalizer()
+    generator = GeneratorChain.from_name("price")
+    discriminator = NormalizerChain.from_name("price")
 
 
 def main(datatype: str):
@@ -59,7 +59,6 @@ def main(datatype: str):
     chain = TestPipeline.from_name(datatype)
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(noop="true"))
-
 
 
 if __name__ == "__main__":

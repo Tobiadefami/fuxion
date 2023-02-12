@@ -7,7 +7,8 @@ from langchain import PromptTemplate
 import typer
 from datasynth import TEMPLATE_DIR
 from pprint import pprint
-from datasynth.base import BaseChain
+from datasynth.base import BaseChain, auto_class
+import typing   
 
 davinci = OpenAI(
     temperature = 0.8,
@@ -24,8 +25,9 @@ class GeneratorChain(BaseChain):
         super().__init__(*args, **kwargs)
         template = PromptTemplate(
             input_variables=[],
+
             template=open(
-                os.path.join(TEMPLATE_DIR, f"{self.datatype}.generator.template")
+                os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
             ).read(),
             validate_template=False,
         )
@@ -44,16 +46,14 @@ class GeneratorChain(BaseChain):
         return {"generated": generated_items}
 
 
-class AddressGenerator(GeneratorChain):
-    datatype = "address"
 
 
-class NameGenerator(GeneratorChain):
-    datatype = "name"
 
 
-class PriceGenerator(GeneratorChain):
-    datatype = "price"
+template_dir = os.path.join(TEMPLATE_DIR, "generator")
+auto_class(template_dir, GeneratorChain, "Generator")
+    
+
 
 
 def main(datatype: str):

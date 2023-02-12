@@ -8,7 +8,7 @@ from langchain import OpenAI, PromptTemplate, LLMChain
 from langchain.cache import SQLiteCache
 from langchain.chains.base import Chain
 import langchain
-from datasynth.base import BaseChain
+from datasynth.base import BaseChain, auto_class
 from datasynth import TEMPLATE_DIR
 
 langchain.llm_cache = SQLiteCache()
@@ -28,7 +28,7 @@ class NormalizerChain(BaseChain):
         template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
-                os.path.join(TEMPLATE_DIR, f"{self.datatype}.template")
+                os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
             ).read(),
             validate_template=True,
             template_format="jinja2",
@@ -56,16 +56,8 @@ class NormalizerChain(BaseChain):
             return {"normalized": []}
 
 
-class NameNormalizer(NormalizerChain):
-    datatype = "name"
-
-
-class AddressNormalizer(NormalizerChain):
-    datatype = "address"
-
-class PriceNormalizer(NormalizerChain):
-    datatype = "price"
-
+template_dir = os.path.join(TEMPLATE_DIR, "generator")
+auto_class(template_dir, NormalizerChain, "Generator")
 
 
 def main(datatype: str, example:str):
