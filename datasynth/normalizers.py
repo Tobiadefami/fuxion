@@ -56,8 +56,8 @@ class NormalizerChain(BaseChain):
             return {"normalized": []}
 
 
-template_dir = os.path.join(TEMPLATE_DIR, "generator")
-auto_class(template_dir, NormalizerChain, "Generator")
+template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
+auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
 def main(datatype: str, example:str):
