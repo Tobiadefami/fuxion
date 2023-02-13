@@ -3,12 +3,15 @@ from datasynth.generators import *
 from datasynth.normalizers import *
 from typing import Any, List
 from datasynth.base import BaseChain
+from typing import ClassVar
+
 #TODO: Figure out how to specify number of example we want out and run until that many examples are generated.  Make sure we save the output to a JSON file so we persist it.
 
 
 class TestPipeline(BaseChain):
-    generator: GeneratorChain
-    discriminator: NormalizerChain
+
+    generator: ClassVar[GeneratorChain]
+    discriminator: ClassVar[NormalizerChain]
     chain_type = "testpipeline"
 
     @property
@@ -18,6 +21,7 @@ class TestPipeline(BaseChain):
     @property
     def output_keys(self) -> List[str]:
         return ["outputs"]
+
 
     @classmethod
     def _call(self, inputs: dict[str, str], k:int=30) -> dict[str, List[dict[str, Any | str]]]:
@@ -35,23 +39,9 @@ class TestPipeline(BaseChain):
                 for example in generated
             ]
         }
-
-
-class AddressTestPipeline(TestPipeline):
-    datatype = "address"
-    generator = GeneratorChain.from_name("address")
-    discriminator = NormalizerChain.from_name("address")
-
-
-class NameTestPipeline(TestPipeline):
-    datatype = "name"
-    generator = GeneratorChain.from_name("name")
-    discriminator = NormalizerChain.from_name("name")
-
-class PriceTestPipeline(TestPipeline):
-    datatype = "price"
-    generator = GeneratorChain.from_name("price")
-    discriminator = NormalizerChain.from_name("price")
+    
+template_dir = os.path.join(TEMPLATE_DIR, "generator")
+auto_class(template_dir, TestPipeline, "TestPipeline", generator_chain=GeneratorChain, normalizer_chain=NormalizerChain)
 
 
 def main(datatype: str):
