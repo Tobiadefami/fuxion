@@ -26,38 +26,43 @@ class BaseChain(Chain):
 
 def template_names(path: str) -> list[str]:
     """
+    obtain template names from a given directory
 
     Args:
         path (str): templates directory
 
     Returns:
-        list[str]: a list of strings 
+        list[str]: a list of template names, eg: address, name, price 
     """
     result: list[str] = []
-    items = os.listdir(path)
+    items: list[str] = os.listdir(path)
     for file in items:
         result.append(os.path.splitext(file)[0])
     return result
     
 
-def auto_class(path, base_cls:type, class_suffix: str, generator_chain = None, normalizer_chain = None):
-    """Dynamically creating classes with type
+def auto_class(path:str, base_cls:type, class_suffix: str, generator_chain: Chain = None, normalizer_chain: Chain = None) -> None:
+    """
+    Dynamically creating new classes for the 
+    generator, normalizer, and pipeline scripts
 
     Args:
-        path (str): _description
-        base_cls (type): _description_
-        class_suffix (str): _description_
+        path (str): directory of files to obtain template names
+        base_cls (type): super class to inherit from 
+        class_suffix (str): suffix to the generated class name
     """
-    items = template_names(path)
-    for item in items:
-        generated_type: type = type(item.capitalize()+class_suffix, (base_cls,), {
-            "datatype": item
+    templates: list[str] = template_names(path)
+    for template in templates:
+        generated_type: type = type(template.capitalize()+class_suffix, (base_cls,), {
+            "datatype": template
         })
 
         if class_suffix == "TestPipeline":
-            generated_type: type = type(item.capitalize()+class_suffix, (base_cls,), {
-                "datatype": item,
-                "generator": generator_chain.from_name(item),
-                "discriminator": normalizer_chain.from_name(item)               
+            generated_type: type = type(template.capitalize()+class_suffix, (base_cls,), {
+                "datatype": template,
+                "generator": generator_chain.from_name(template),
+                "discriminator": normalizer_chain.from_name(template)               
             })
+
+    
  
