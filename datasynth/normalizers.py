@@ -3,7 +3,7 @@ import ast
 from pprint import pprint
 import os
 import typer
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from langchain import OpenAI, PromptTemplate, LLMChain
 from langchain.cache import SQLiteCache
 from langchain.chains.base import Chain
@@ -21,11 +21,13 @@ structured_davinci = OpenAI(
 
 
 class NormalizerChain(BaseChain):
+    _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        template = PromptTemplate(
+        self._template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
                 os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
@@ -34,7 +36,7 @@ class NormalizerChain(BaseChain):
             template_format="jinja2",
         )
         self.chain = LLMChain(
-            prompt=template,
+            prompt=self._template,
             llm=structured_davinci,
             verbose=True,
         )
@@ -60,11 +62,10 @@ template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
 auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
-def main(datatype: str, example:str):
-
+def main(datatype: str, example: str):
     chain = NormalizerChain.from_name(datatype)
     pprint(chain.run(**{datatype: example}))
-    
+
 
 if __name__ == "__main__":
     typer.run(main)

@@ -2,26 +2,25 @@ from typing import ClassVar
 from langchain.chains.base import Chain
 from typing import Any
 import os
-class BaseChain(Chain):
 
+
+class BaseChain(Chain):
     datatype: ClassVar[str]
     chain_type: ClassVar[str]
     registry: ClassVar[dict[Any, str]] = {}
-    
 
-    def __init_subclass__(cls, **kwargs:Any):
+    def __init_subclass__(cls, **kwargs: Any):
         super().__init_subclass__(**kwargs)
         cls.register(cls)
 
     @classmethod
-    def register(cls, sub_cls:Any):
-        if hasattr(sub_cls, 'datatype'):
+    def register(cls, sub_cls: Any):
+        if hasattr(sub_cls, "datatype"):
             cls.registry[(sub_cls.chain_type, sub_cls.datatype)] = sub_cls
 
     @classmethod
-    def from_name(cls, datatype:str) -> Chain:
-        return cls.registry[(cls.chain_type, datatype)]()
-    
+    def from_name(cls, datatype: str, *args, **kwargs) -> Chain:
+        return cls.registry[(cls.chain_type, datatype)](*args, **kwargs)
 
 
 def template_names(path: str) -> list[str]:
@@ -32,37 +31,44 @@ def template_names(path: str) -> list[str]:
         path (str): templates directory
 
     Returns:
-        list[str]: a list of template names, eg: address, name, price 
+        list[str]: a list of template names, eg: address, name, price
     """
     result: list[str] = []
     items: list[str] = os.listdir(path)
     for file in items:
         result.append(os.path.splitext(file)[0])
     return result
-    
 
-def auto_class(path:str, base_cls:type, class_suffix: str, generator_chain: Chain = None, normalizer_chain: Chain = None) -> None:
+
+def auto_class(
+    path: str,
+    base_cls: type,
+    class_suffix: str,
+    generator_chain: Chain = None,
+    normalizer_chain: Chain = None,
+) -> None:
     """
-    Dynamically creating new classes for the 
+    Dynamically creating new classes for the
     generator, normalizer, and pipeline scripts
 
     Args:
         path (str): directory of files to obtain template names
-        base_cls (type): super class to inherit from 
+        base_cls (type): super class to inherit from
         class_suffix (str): suffix to the generated class name
     """
     templates: list[str] = template_names(path)
     for template in templates:
-        generated_type: type = type(template.capitalize()+class_suffix, (base_cls,), {
-            "datatype": template
-        })
+        generated_type: type = type(
+            template.capitalize() + class_suffix, (base_cls,), {"datatype": template}
+        )
 
         if class_suffix == "TestPipeline":
-            generated_type: type = type(template.capitalize()+class_suffix, (base_cls,), {
-                "datatype": template,
-                "generator": generator_chain.from_name(template),
-                "discriminator": normalizer_chain.from_name(template)               
-            })
-
-    
- 
+            generated_type: type = type(
+                template.capitalize() + class_suffix,
+                (base_cls,),
+                {
+                    "datatype": template,
+                    "generator": generator_chain.from_name(template),
+                    "normalizer": normalizer_chain.from_name(template),
+                },
+            )
