@@ -10,27 +10,39 @@ from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 import typing
 
-davinci = OpenAI(
-    temperature=0.8,
-    cache=True,
-)
+# davinci = OpenAI(
+#     temperature=0.8,
+#     cache=True,
+# )
 
 
 class GeneratorChain(BaseChain):
     _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type: ClassVar[str] = "generator"
-
+    temperature: float = 0
+    cache: bool = True
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
             input_variables=[],
             template=open(
-                os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
+                os.path.join(TEMPLATE_DIR, "generator",
+                             f"{self.datatype}.template")
             ).read(),
             validate_template=False,
         )
-        self.chain = LLMChain(prompt=self._template, llm=davinci, verbose=True)
+        
+        if self.temperature>2.0:
+            raise ValueError(f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'")
+        
+        self.chain = LLMChain(
+            prompt=self._template, 
+            llm=OpenAI(
+                temperature= self.temperature,
+                cache = self.cache
+            ), 
+            verbose=True)
 
     @property
     def input_keys(self) -> list[str]:
@@ -49,8 +61,8 @@ template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 
 
-def main(datatype: str):
-    chain = GeneratorChain.from_name(datatype)
+def main(datatype: str, temperature: float, cache: bool):
+    chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(noop="true"))
 

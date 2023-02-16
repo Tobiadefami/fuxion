@@ -10,21 +10,24 @@ from langchain.chains.base import Chain
 import langchain
 from datasynth.base import BaseChain, auto_class
 from datasynth import TEMPLATE_DIR
+from typing import Any
 
 langchain.llm_cache = SQLiteCache()
 
-structured_davinci = OpenAI(
-    temperature=0,
-    cache=True,
-    stop=["]"],
-)
-
+# structured_davinci = OpenAI(
+#     temperature=0,
+#     cache=True,
+#     stop=["]"],
+# )
 
 class NormalizerChain(BaseChain):
+    
     _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
-
+    temperature: float = 0
+    cache: bool = True
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
@@ -35,9 +38,14 @@ class NormalizerChain(BaseChain):
             validate_template=True,
             template_format="jinja2",
         )
+        if self.temperature>2.0:
+            raise ValueError(f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'") 
+        
         self.chain = LLMChain(
             prompt=self._template,
-            llm=structured_davinci,
+            llm=OpenAI(temperature=self.temperature,
+                       cache= self.cache,
+                       stop= ["]"]),
             verbose=True,
         )
 
@@ -49,7 +57,7 @@ class NormalizerChain(BaseChain):
     def output_keys(self) -> list[str]:
         return ["normalized"]
 
-    def _call(self, inputs: dict[str, str]) -> dict[str, list]:
+    def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
         output = "[{" + self.chain.run(**inputs) + "]"
         try:
             return {"normalized": ast.literal_eval(output)}
@@ -62,8 +70,9 @@ template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
 auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
-def main(datatype: str, example: str):
-    chain = NormalizerChain.from_name(datatype)
+def main(datatype: str, example: str, temperature: float, cache: bool):
+
+    chain = NormalizerChain.from_name(datatype, temperature=temperature, cache=cache)
     pprint(chain.run(**{datatype: example}))
 
 

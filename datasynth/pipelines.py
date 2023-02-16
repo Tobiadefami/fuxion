@@ -38,7 +38,7 @@ class TestPipeline(BaseChain):
         while len(generated) < self.k:
             generated.extend(self.generator.run(**inputs))
 
-        results = {
+        results: dict[str, dict[str, list[dict[str, Any|str]] | str]] = {
             "dataset": {
                 "outputs": [
                     {
