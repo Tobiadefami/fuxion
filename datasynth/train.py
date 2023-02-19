@@ -5,25 +5,24 @@ from datasynth.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
 
 
-
 def main(
     experiment_name,
     data_file=None,
     dataloader_num_workers=0,
     max_length=512,
     batch_size=2,
-    dropout=0.,
+    dropout=0.0,
     gradient_checkpointing=True,
     pretrained_checkpoint=None,
     base_model="google/byt5-small",
     num_train_epochs=1.0,
-    learning_rate=3e-4,  
-    weight_decay=0.01,  
+    learning_rate=3e-4,
+    weight_decay=0.01,
     warmup_ratio=0.1,
     gradient_accumulation_steps=8,
     resume=False,
     max_steps=10000,
-    **kwargs
+    **kwargs,
 ):
     if kwargs:
         raise AssertionError(f"Unexpected arguments: {kwargs}")
@@ -36,7 +35,6 @@ def main(
     config.hidden_dropout_prob = dropout
     config.attention_probs_dropout_prob = dropout
     model = model_cls.from_pretrained(pretrained_checkpoint, config=config)
-
 
     args = TrainingArguments(
         output_dir=experiment_name,
@@ -65,12 +63,8 @@ def main(
     collator = DataCollatorForSeq2Seq(
         tokenizer=tokenizer, model=model, max_length=max_length, return_tensors="pt"
     )
-    
 
-    train_dataset = NormalizationDataset(
-        json_file=data_file,
-        max_length=max_length
-    )
+    train_dataset = NormalizationDataset(json_file=data_file, max_length=max_length)
     trainer_kwargs = dict(
         model=model,
         args=args,

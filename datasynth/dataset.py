@@ -6,10 +6,7 @@ from typing import Any
 tokenizer = AutoTokenizer.from_pretrained("google/byt5-small")
 
 
-
-
-def preprocess(example: dict[str, Any], max_length: int=512) -> dict[str, Any]:
-    
+def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]:
 
     encoded_inputs = tokenizer(
         example["inputs"],
@@ -19,7 +16,7 @@ def preprocess(example: dict[str, Any], max_length: int=512) -> dict[str, Any]:
         truncation=True,
         return_overflowing_tokens=False,
     )
-    
+
     encoded_outputs = tokenizer(
         json.dumps(example["outputs"]),
         padding="max_length",
@@ -51,9 +48,9 @@ class NormalizationDataset(Dataset):
     def __len__(self):
         return len(self.dataset)
 
-    def __getitem__(self, index:int):
+    def __getitem__(self, index: int):
         example = self.dataset[index]
-        processed_examples= preprocess(example, self.max_length)
+        processed_examples = preprocess(example, self.max_length)
         return processed_examples
 
 

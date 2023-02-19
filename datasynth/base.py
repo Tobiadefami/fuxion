@@ -7,6 +7,7 @@ from langchain.cache import SQLiteCache
 
 langchain.llm_cache = SQLiteCache()
 
+
 class BaseChain(Chain):
     datatype: ClassVar[str]
     chain_type: ClassVar[str]
@@ -50,7 +51,7 @@ def auto_class(
     generator_chain: Chain = None,
     normalizer_chain: Chain = None,
     **kwargs
-    ) -> None:
+) -> None:
     """
     Dynamically creating new classes for the
     generator, normalizer, and pipeline scripts
@@ -76,4 +77,3 @@ def auto_class(
                     "normalizer": normalizer_chain.from_name(template),
                 },
             )
-

@@ -38,7 +38,7 @@ class TestPipeline(BaseChain):
         while len(generated) < self.k:
             generated.extend(self.generator.run(**inputs))
 
-        results: dict[str, dict[str, list[dict[str, Any|str]] | str]] = {
+        results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": [
                     {
@@ -80,18 +80,22 @@ auto_class(
 )
 
 
+def main(
+    datatype: str,
+    k: int = 10,
+    dataset_name: str = None,
+    temperature: float = 0.8,
+    cache: bool = False,
+):
 
-
-def main(datatype: str, k: int = 10, dataset_name: str = None, temperature: float = 0.8, cache: bool = False):
-    
     auto_class(
         template_dir,
         TestPipeline,
         "TestPipeline",
         generator_chain=GeneratorChain,
         normalizer_chain=NormalizerChain,
-        temperature = temperature,
-        cache = cache
+        temperature=temperature,
+        cache=cache,
     )
     chain = TestPipeline.from_name(datatype, k=k, dataset_name=dataset_name)
     # No-op thing is a hack, not sure why it won't let me run with no args

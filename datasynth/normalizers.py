@@ -16,14 +16,15 @@ from typing import Any
 #     stop=["]"],
 # )
 
+
 class NormalizerChain(BaseChain):
-    
+
     _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
     temperature: float = 0.0
     cache: bool = True
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
@@ -34,14 +35,14 @@ class NormalizerChain(BaseChain):
             validate_template=True,
             template_format="jinja2",
         )
-        if self.temperature>2.0:
-            raise ValueError(f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'") 
-        
+        if self.temperature > 2.0:
+            raise ValueError(
+                f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
+            )
+
         self.chain = LLMChain(
             prompt=self._template,
-            llm=OpenAI(temperature=self.temperature,
-                       cache= self.cache,
-                       stop= ["]"]),
+            llm=OpenAI(temperature=self.temperature, cache=self.cache, stop=["]"]),
             verbose=True,
         )
 
