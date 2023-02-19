@@ -1,11 +1,5 @@
-from dataset import DocModelDataset
 from transformers import TrainingArguments
-from collator import DataCollatorForWholeWordMask
 import fire
-import torch
-from docmodel.doc_model import RobertaDocModelForMLM, XDocModelForMLM, DocModelConfig
-from transformers import RobertaForMaskedLM
-from transformers import RobertaTokenizerFast, RobertaConfig
 from transformers import Trainer, AutoConfig
 from datasynth.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
