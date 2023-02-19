@@ -80,7 +80,19 @@ auto_class(
 )
 
 
-def main(datatype: str, k: int = 10, dataset_name: str = None):
+
+
+def main(datatype: str, k: int = 10, dataset_name: str = None, temperature: float = 0.8, cache: bool = False):
+    
+    auto_class(
+        template_dir,
+        TestPipeline,
+        "TestPipeline",
+        generator_chain=GeneratorChain,
+        normalizer_chain=NormalizerChain,
+        temperature = temperature,
+        cache = cache
+    )
     chain = TestPipeline.from_name(datatype, k=k, dataset_name=dataset_name)
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(noop="true"))

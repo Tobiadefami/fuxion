@@ -20,8 +20,9 @@ class GeneratorChain(BaseChain):
     _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type: ClassVar[str] = "generator"
-    temperature: float = 0
-    cache: bool = True
+    temperature: float = 0.0
+    cache: bool = False
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
@@ -61,7 +62,7 @@ template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 
 
-def main(datatype: str, temperature: float, cache: bool):
+def main(datatype: str, temperature: float = 0.5, cache: bool=False):
     chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(noop="true"))

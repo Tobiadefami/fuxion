@@ -2,7 +2,10 @@ from typing import ClassVar
 from langchain.chains.base import Chain
 from typing import Any
 import os
+import langchain
+from langchain.cache import SQLiteCache
 
+langchain.llm_cache = SQLiteCache()
 
 class BaseChain(Chain):
     datatype: ClassVar[str]
@@ -46,7 +49,8 @@ def auto_class(
     class_suffix: str,
     generator_chain: Chain = None,
     normalizer_chain: Chain = None,
-) -> None:
+    **kwargs
+    ) -> None:
     """
     Dynamically creating new classes for the
     generator, normalizer, and pipeline scripts
@@ -68,7 +72,8 @@ def auto_class(
                 (base_cls,),
                 {
                     "datatype": template,
-                    "generator": generator_chain.from_name(template),
+                    "generator": generator_chain.from_name(template, **kwargs),
                     "normalizer": normalizer_chain.from_name(template),
                 },
             )
+

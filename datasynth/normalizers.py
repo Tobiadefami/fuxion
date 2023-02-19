@@ -5,14 +5,10 @@ import os
 import typer
 from pydantic import Field, PrivateAttr
 from langchain import OpenAI, PromptTemplate, LLMChain
-from langchain.cache import SQLiteCache
-from langchain.chains.base import Chain
-import langchain
 from datasynth.base import BaseChain, auto_class
 from datasynth import TEMPLATE_DIR
 from typing import Any
 
-langchain.llm_cache = SQLiteCache()
 
 # structured_davinci = OpenAI(
 #     temperature=0,
@@ -25,7 +21,7 @@ class NormalizerChain(BaseChain):
     _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
-    temperature: float = 0
+    temperature: float = 0.0
     cache: bool = True
     
     def __init__(self, *args, **kwargs):
@@ -70,7 +66,7 @@ template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
 auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
-def main(datatype: str, example: str, temperature: float, cache: bool):
+def main(datatype: str, example: str, temperature: float = 0.0, cache: bool = False):
 
     chain = NormalizerChain.from_name(datatype, temperature=temperature, cache=cache)
     pprint(chain.run(**{datatype: example}))
