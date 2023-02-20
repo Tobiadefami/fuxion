@@ -9,7 +9,7 @@ tokenizer = AutoTokenizer.from_pretrained("google/byt5-small")
 def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]:
 
     encoded_inputs = tokenizer(
-        example["inputs"],
+        example["input"],
         padding="max_length",
         max_length=max_length,
         return_tensors="pt",
@@ -18,7 +18,7 @@ def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]
     )
 
     encoded_outputs = tokenizer(
-        json.dumps(example["outputs"]),
+        json.dumps(example["output"]),
         padding="max_length",
         max_length=max_length,
         return_tensors="pt",
@@ -56,6 +56,6 @@ class NormalizationDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = NormalizationDataset(
-        json_file="~/GPT3Norm/datasynth/datasets/names-100.json",
+        json_file="/home/chief/GPT3Norm/datasynth/datasets/names-100.json",
     )
     print(dataset[15])
