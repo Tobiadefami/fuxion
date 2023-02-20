@@ -3,7 +3,7 @@ import fire
 from transformers import Trainer, AutoConfig
 from datasynth.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
-
+from transformers import T5ForConditionalGeneration
 
 def main(
     experiment_name,

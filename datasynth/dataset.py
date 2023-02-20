@@ -1,5 +1,5 @@
 import json
-from torch import Dataset
+from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 from typing import Any
 
@@ -56,6 +56,6 @@ class NormalizationDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = NormalizationDataset(
-        directory="~/GPT3Norm/datasynth/datasets/names-100.json",
+        json_file="~/GPT3Norm/datasynth/datasets/names-100.json",
     )
     print(dataset[15])

@@ -61,6 +61,8 @@ class TestPipeline(BaseChain):
 
         if self.dataset_name is None:
             self.dataset_name = f"{str(int(time.time()))}.json"
+        else:
+            self.dataset_name = f"{self.dataset_name}.json"
 
         dataset_path = os.path.join("datasets", self.dataset_name)
         with open(dataset_path, "w") as fd:
