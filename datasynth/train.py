@@ -1,9 +1,13 @@
 from transformers import TrainingArguments
 import fire
+import typer
 from transformers import Trainer, AutoConfig
 from datasynth.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
 from transformers import T5ForConditionalGeneration
+import wandb
+
+
 
 def main(
     experiment_name,
@@ -29,8 +33,12 @@ def main(
     # TODO: start training from random initialization
     # TODO: incorporate other objectives
     model_cls = T5ForConditionalGeneration
-
-    print("Training from pre-trained model")
+    
+    if pretrained_checkpoint is None:
+        print("Training from pre-trained model")
+        pretrained_checkpoint = base_model
+        print(pretrained_checkpoint)
+    
     config = AutoConfig.from_pretrained(pretrained_checkpoint)
     config.hidden_dropout_prob = dropout
     config.attention_probs_dropout_prob = dropout
@@ -79,3 +87,4 @@ def main(
 
 if __name__ == "__main__":
     fire.Fire(main)
+    # typer.run(main)
