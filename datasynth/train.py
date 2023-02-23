@@ -8,37 +8,45 @@ from transformers import T5ForConditionalGeneration
 import wandb
 
 
+def test_generation(model, test_example):
+    example = test_example["input_ids"].unsqueeze(0).to(model.device)
+    output_tokens = model.generate(input_ids=example, max_length=256, temperature=0.)
+    output_text = tokenizer.batch_decode(output_tokens, skip_special_tokens=True)
+    expected_output_text = tokenizer.decode(
+        test_example["labels"], skip_special_tokens=True
+    )
+    print("Output", output_text)
+    print("Expected Output", expected_output_text)
+
 
 def main(
     experiment_name,
-    data_file=None,
-    dataloader_num_workers=0,
-    max_length=512,
-    batch_size=2,
-    dropout=0.0,
-    gradient_checkpointing=True,
-    pretrained_checkpoint=None,
-    base_model="google/byt5-small",
-    num_train_epochs=1.0,
-    learning_rate=3e-4,
-    weight_decay=0.01,
-    warmup_ratio=0.1,
-    gradient_accumulation_steps=8,
-    resume=False,
-    max_steps=10000,
-    **kwargs,
+    data_file: str | None = None,
+    dataset_size: int | None = None,
+    dataloader_num_workers: int = 0,
+    max_length: int = 512,
+    batch_size: int = 2,
+    dropout: float = 0.0,
+    gradient_checkpointing: bool = False,
+    pretrained_checkpoint: str | None = None,
+    base_model: str = "google/byt5-small",
+    num_train_epochs: float = 10.0,
+    learning_rate: float = 3e-4,
+    weight_decay: float = 0.01,
+    warmup_ratio: float = 0.1,
+    gradient_accumulation_steps: int = 1,
+    # resume: bool=False,
+    max_steps: int = 10000,
 ):
-    if kwargs:
-        raise AssertionError(f"Unexpected arguments: {kwargs}")
     # TODO: start training from random initialization
     # TODO: incorporate other objectives
     model_cls = T5ForConditionalGeneration
-    
+
     if pretrained_checkpoint is None:
         print("Training from pre-trained model")
         pretrained_checkpoint = base_model
         print(pretrained_checkpoint)
-    
+
     config = AutoConfig.from_pretrained(pretrained_checkpoint)
     config.hidden_dropout_prob = dropout
     config.attention_probs_dropout_prob = dropout
@@ -65,14 +73,21 @@ def main(
         weight_decay=weight_decay,
         max_steps=max_steps,
         report_to="wandb",
+        gradient_checkpointing=gradient_checkpointing
         # fp16=True,
     )
 
     collator = DataCollatorForSeq2Seq(
-        tokenizer=tokenizer, model=model, max_length=max_length, return_tensors="pt"
+        tokenizer=tokenizer,
+        model=model,
+        max_length=max_length,
+        return_tensors="pt",
+        padding="max_length",
     )
 
-    train_dataset = NormalizationDataset(json_file=data_file, max_length=max_length)
+    train_dataset = NormalizationDataset(
+        json_file=data_file, max_length=max_length, dataset_size=dataset_size
+    )
     trainer_kwargs = dict(
         model=model,
         args=args,
@@ -82,9 +97,9 @@ def main(
     trainer = Trainer(**trainer_kwargs)
 
     trainer.train()
+    test_generation(model, test_example=train_dataset[0])
     trainer.save_model()
 
 
 if __name__ == "__main__":
-    fire.Fire(main)
-    # typer.run(main)
+    typer.run(main)

@@ -25,9 +25,12 @@ def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]
         truncation=True,
         return_overflowing_tokens=False,
     )
-    encoded_outputs: dict[str, Any] = encoded_outputs.input_ids
-    encoded_inputs["labels"] = encoded_outputs
-    return encoded_inputs
+    result = {
+        "input_ids": encoded_inputs.input_ids[0],
+        "attention_mask": encoded_inputs.attention_mask[0],
+        "labels": encoded_outputs.input_ids[0],
+    }
+    return result
 
 
 class NormalizationDataset(Dataset):
