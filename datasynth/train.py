@@ -10,7 +10,7 @@ import wandb
 
 def test_generation(model, test_example):
     example = test_example["input_ids"].unsqueeze(0).to(model.device)
-    output_tokens = model.generate(input_ids=example, max_length=256, temperature=0.)
+    output_tokens = model.generate(input_ids=example, max_length=256, temperature=0.0)
     output_text = tokenizer.batch_decode(output_tokens, skip_special_tokens=True)
     expected_output_text = tokenizer.decode(
         test_example["labels"], skip_special_tokens=True
@@ -36,7 +36,7 @@ def main(
     warmup_ratio: float = 0.1,
     gradient_accumulation_steps: int = 1,
     # resume: bool=False,
-    max_steps: int = 10000,
+    # max_steps: int = None,
 ):
     # TODO: start training from random initialization
     # TODO: incorporate other objectives
@@ -71,7 +71,7 @@ def main(
         learning_rate=learning_rate,
         warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
-        max_steps=max_steps,
+        # max_steps=max_steps,
         report_to="wandb",
         gradient_checkpointing=gradient_checkpointing
         # fp16=True,

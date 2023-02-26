@@ -6,7 +6,7 @@ import typer
 from pydantic import Field, PrivateAttr
 from langchain import OpenAI, PromptTemplate, LLMChain
 from datasynth.base import BaseChain, auto_class
-from datasynth import TEMPLATE_DIR
+from datasynth import TEMPLATE_DIR, EXAMPLE_DIR
 from typing import Any
 
 

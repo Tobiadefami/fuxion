@@ -1,5 +1,6 @@
 import typer
 import time
+import random
 from typing import Optional
 from datasynth.generators import *
 from datasynth.normalizers import *
@@ -11,7 +12,8 @@ from typing import ClassVar
 
 
 class TestPipeline(BaseChain):
-    k: Optional[int] = 10
+    k: int = 10
+    sample_size: int = 3
     dataset_name: Optional[str] = None
     # manual_review: bool = False
     generator: ClassVar[GeneratorChain]
@@ -24,7 +26,7 @@ class TestPipeline(BaseChain):
 
     @property
     def input_keys(self) -> List[str]:
-        return self.generator.input_keys
+        return []
 
     @property
     def output_keys(self) -> List[str]:
@@ -35,20 +37,39 @@ class TestPipeline(BaseChain):
         inputs: dict[str, str],
     ) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
+
+        example_file: str = os.path.join(EXAMPLE_DIR, f"{self.datatype}.json")
+        population: list[str] = []
+        if os.path.exists(example_file):
+            population = json.load(open(example_file))
+
         while len(generated) < self.k:
+            try:
+                sample = random.sample(population, k=self.sample_size)
+                sample_text = "\n\n".join(sample)
+                few_shot = f"Reference Format:\n{sample_text}\n"
+                inputs["few_shot"] = few_shot
+            except ValueError:
+                pass
             generated.extend(self.generator.run(**inputs))
 
-        results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
-            "dataset": {
-                "outputs": [
+        outputs = []
+        for example in generated[: self.k]:
+            try:
+                outputs.append(
                     {
                         "input": example,
                         "output": self.normalizer.run(
                             **{self.normalizer.input_keys[0]: example}
                         ),
                     }
-                    for example in generated[: self.k]
-                ],
+                )
+            except:
+                continue
+
+        results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
+            "dataset": {
+                "outputs": outputs,
                 "generator_prompt": self.generator._template.template,
                 "normalizer_prompt": self.normalizer._template.template,
             }

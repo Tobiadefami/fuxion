@@ -26,11 +26,12 @@ class GeneratorChain(BaseChain):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
-            input_variables=[],
+            input_variables=["few_shot"],
             template=open(
                 os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
             ).read(),
             validate_template=False,
+            template_format="jinja2",
         )
 
         if self.temperature > 2.0:
