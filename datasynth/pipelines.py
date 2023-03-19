@@ -11,14 +11,14 @@ from typing import ClassVar
 # TODO: Figure out how to specify number of example we want out and run until that many examples are generated.  Make sure we save the output to a JSON file so we persist it.
 
 
-class TestPipeline(BaseChain):
+class DatasetPipeline(BaseChain):
     k: int = 10
     sample_size: int = 3
     dataset_name: Optional[str] = None
     # manual_review: bool = False
     generator: ClassVar[GeneratorChain]
     normalizer: ClassVar[NormalizerChain]
-    chain_type = "testpipeline"
+    chain_type = "DatasetPipeline"
 
     # def __init__(self, *args, **kwargs):
     #     self.k = kwargs.pop('k', 10)
@@ -44,13 +44,11 @@ class TestPipeline(BaseChain):
             population = json.load(open(example_file))
 
         while len(generated) < self.k:
-            try:
-                sample = random.sample(population, k=self.sample_size)
-                sample_text = "\n\n".join(sample)
-                few_shot = f"Reference Format:\n{sample_text}\n"
-                inputs["few_shot"] = few_shot
-            except ValueError:
-                pass
+            sample = random.sample(population, k=self.sample_size)
+            sample_text = "\n\n".join(sample)
+            few_shot = f"Reference Format:\n{sample_text}\n"
+            inputs["few_shot"] = few_shot
+            
             generated.extend(self.generator.run(**inputs))
 
         outputs = []
@@ -60,7 +58,7 @@ class TestPipeline(BaseChain):
                     {
                         "input": example,
                         "output": self.normalizer.run(
-                            **{self.normalizer.input_keys[0]: example}
+                            **{self.normalizer.input_keys[0]: example.strip()}
                         ),
                     }
                 )
@@ -96,34 +94,46 @@ class TestPipeline(BaseChain):
 template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(
     template_dir,
-    TestPipeline,
-    "TestPipeline",
+    DatasetPipeline,
+    "DatasetPipeline",
     generator_chain=GeneratorChain,
     normalizer_chain=NormalizerChain,
 )
 
 
-def main(
+def generate_dataset(
     datatype: str,
     k: int = 10,
     dataset_name: str = None,
     temperature: float = 0.8,
     cache: bool = False,
 ):
+    """ Generate
+
+    Args:
+        datatype (str): _description_
+        k (int, optional): _description_. Defaults to 10.
+        dataset_name (str, optional): _description_. Defaults to None.
+        temperature (float, optional): _description_. Defaults to 0.8.
+        cache (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
 
     auto_class(
         template_dir,
-        TestPipeline,
-        "TestPipeline",
+        DatasetPipeline,
+        "DatasetPipeline",
         generator_chain=GeneratorChain,
         normalizer_chain=NormalizerChain,
         temperature=temperature,
         cache=cache,
     )
-    chain = TestPipeline.from_name(datatype, k=k, dataset_name=dataset_name)
+    chain = DatasetPipeline.from_name(datatype, k=k, dataset_name=dataset_name)
     # No-op thing is a hack, not sure why it won't let me run with no args
-    pprint(chain.run(noop="true"))
+    return chain.run(noop="true")
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(generate_dataset)

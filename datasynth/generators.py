@@ -52,12 +52,13 @@ class GeneratorChain(BaseChain):
     @property
     def output_keys(self) -> list[str]:
         return ["generated"]
-
+    
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
         generated_items = self.chain.run(**inputs).split("\n\n")
-        return {"generated": generated_items}
+        filtered_items = [item for item in generated_items if item.strip()]
+        return {"generated": filtered_items}
 
-
+    
 template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 

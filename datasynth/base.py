@@ -67,7 +67,7 @@ def auto_class(
             template.capitalize() + class_suffix, (base_cls,), {"datatype": template}
         )
 
-        if class_suffix == "TestPipeline":
+        if class_suffix == "DatasetPipeline":
             generated_type: type = type(
                 template.capitalize() + class_suffix,
                 (base_cls,),

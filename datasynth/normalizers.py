@@ -55,6 +55,7 @@ class NormalizerChain(BaseChain):
         return ["normalized"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
+        print("input >>", inputs)
         output = "[{" + self.chain.run(**inputs) + "]"
         try:
             return {"normalized": ast.literal_eval(output)}
