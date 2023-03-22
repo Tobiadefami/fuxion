@@ -10,7 +10,10 @@ We recommend that you create a virtual environment before proceeding with the in
   ```bash
   pip install poetry  
   ```
-- cd into the project directory and run ```poetry install``` from the terminal.
+- From the terminal, cd into the project directory and run: 
+  ```bash 
+  poetry install
+  ```
 - Add the following to your bashrc file and replace "your-key" with your OpenAI API key: 
   ```bash
   export OPENAI_API_KEY = "your-key"
@@ -23,7 +26,7 @@ All of the magic happens in the pipelines script, but inorder to run it some thi
 -  The project directory contains two folders named `examples` and `templates`. These are folders that contain files for few-shot learning and the prompts that need to be passed to the chain respectively.
 - The `templates` directory contains a generator and normalizer directory which hold the generator and normalizer prompts 
 
-By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for  
+By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for 
 
 
 
