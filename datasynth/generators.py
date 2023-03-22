@@ -9,7 +9,7 @@ from datasynth import TEMPLATE_DIR
 from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 import typing
-
+import time
 # davinci = OpenAI(
 #     temperature=0.8,
 #     cache=True,
@@ -22,6 +22,8 @@ class GeneratorChain(BaseChain):
     chain_type: ClassVar[str] = "generator"
     temperature: float = 0.0
     cache: bool = False
+    retry_count: int = 3
+    retry_delay: int = 5
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,12 +40,20 @@ class GeneratorChain(BaseChain):
             raise ValueError(
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
-
-        self.chain = LLMChain(
-            prompt=self._template,
-            llm=OpenAI(temperature=self.temperature, cache=self.cache),
-            verbose=True,
-        )
+        while self.retry_count > 0:
+            try:
+                self.chain = LLMChain(
+                    prompt=self._template,
+                    llm=OpenAI(temperature=self.temperature, cache=self.cache),
+                    verbose=True,
+                )
+                break
+            except Exception as e:
+                print(f"Connection Error: {e}")
+                self.retry_count -= 1
+                if self.retry_count > 0:
+                    print(f"Retrying in {self.retry_delay} seconds...")
+                    time.sleep(self.retry_delay)
 
     @property
     def input_keys(self) -> list[str]:
@@ -52,13 +62,13 @@ class GeneratorChain(BaseChain):
     @property
     def output_keys(self) -> list[str]:
         return ["generated"]
-    
+
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
         generated_items = self.chain.run(**inputs).split("\n\n")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
-    
+
 template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 
