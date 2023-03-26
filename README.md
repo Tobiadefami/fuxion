@@ -27,6 +27,28 @@ All of the magic happens in the pipelines script, but inorder to run it some thi
 - The `templates` directory contains a generator and normalizer directory which hold the generator and normalizer prompts 
 
 By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for 
+### Generating synthetic data for testing
+![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
+
+### Normalize data into component parts/structured form
+![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/normalizers.gif)
+
+## Generating data to train machine learning models [pipelines]
+
+```bash
+Usage: pipelines.py [OPTIONS] DATATYPE
+╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ *    datatype      TEXT  [default: None] [required]                                                                                                                                                                                                      │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --k                             INTEGER  [default: 10]                                                                                                                                                                                                   │
+│ --dataset-name                  TEXT     [default: None]                                                                                                                                                                                                 │
+│ --temperature                   FLOAT    [default: 0.8]                                                                                                                                                                                                  │
+│ --cache           --no-cache             [default: no-cache]                                                                                                                                                                                             │
+│ --help                                   Show this message and exit. 
+```
+
+from the above description, pipelines requires only the datatype argument to be passed to it per run, while all other arguments are optional.
 
 
 
