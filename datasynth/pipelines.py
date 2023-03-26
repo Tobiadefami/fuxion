@@ -7,7 +7,7 @@ from datasynth.normalizers import *
 from typing import Any, List, ClassVar, Optional
 from datasynth.base import BaseChain
 from typing import ClassVar
-
+from few_shot import generate_population, populate_few_shot
 # TODO: Figure out how to specify number of example we want out and run until that many examples are generated.  Make sure we save the output to a JSON file so we persist it.
 
 
@@ -38,15 +38,9 @@ class DatasetPipeline(BaseChain):
     ) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
 
-        example_file: str = os.path.join(EXAMPLE_DIR, f"{self.datatype}.json")
-        population: list[str] = []
-        if os.path.exists(example_file):
-            population = json.load(open(example_file))
-
+        population = generate_population(self.datatype)
         while len(generated) < self.k:
-            sample = random.sample(population, k=self.sample_size)
-            sample_text = "\n\n".join(sample)
-            few_shot = f"Reference Format:\n{sample_text}\n"
+            few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             inputs["few_shot"] = few_shot
             
             generated.extend(self.generator.run(**inputs))

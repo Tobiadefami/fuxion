@@ -10,6 +10,7 @@ from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 import typing
 import time
+from few_shot import populate_few_shot, generate_population
 # davinci = OpenAI(
 #     temperature=0.8,
 #     cache=True,
@@ -73,10 +74,13 @@ template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 
 
-def main(datatype: str, temperature: float = 0.5, cache: bool = False):
+def main(datatype: str, sample_size: int = 3,  temperature: float = 0.5, cache: bool = False):
+    population = generate_population(datatype)
+    few_shot = populate_few_shot(population=population, sample_size=sample_size)
+    chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
     chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
     # No-op thing is a hack, not sure why it won't let me run with no args
-    pprint(chain.run(noop="true"))
+    pprint(chain.run(few_shot=few_shot, noop="true"))
 
 
 if __name__ == "__main__":
