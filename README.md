@@ -1,7 +1,15 @@
 # Datasynth
 GPT-3 powered data generation and normalization functions.
+# Table of Contents
 
-## Installation
+* [Installation](#installation)
+* [Getting Started](#getting-started)
+* [Usage](#usage)
+  * [Gneration](#Generation)
+  * [Normalization](#Normalization)
+  * [Pipelines](#Pipelines)
+
+# Installation
 
 We recommend that you create a virtual environment before proceeding with the installation process as it would help to create an isolated environment for this project. After doing that, you can proceed with the installation by following the steps below.
 
@@ -19,7 +27,7 @@ We recommend that you create a virtual environment before proceeding with the in
   export OPENAI_API_KEY = "your-key"
   ```   
 
-## Usage
+# Usage
 
 All of the magic happens in the pipelines script, but inorder to run it some things need to be considered:
 
@@ -27,13 +35,17 @@ All of the magic happens in the pipelines script, but inorder to run it some thi
 - The `templates` directory contains a generator and normalizer directory which hold the generator and normalizer prompts 
 
 By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for 
-### Generating synthetic data for testing
+
+## Generation
+Generating synthetic data for testing
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
 
-### Normalize data into component parts/structured form
+## Normalization 
+Normalize data into component parts/structured form
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/normalizers.gif)
 
-## Generating data to train machine learning models [pipelines]
+## Pipelines
+Generating data to train machine learning models
 
 ```bash
 Usage: pipelines.py [OPTIONS] DATATYPE
