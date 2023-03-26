@@ -4,7 +4,7 @@ import os
 import json
 
 
-def generate_population(datatype: str ):
+def generate_population(datatype: str):
     population: list[str] = []
     example_file: str = os.path.join(EXAMPLE_DIR, f"{datatype}.json")
     if os.path.exists(example_file):
