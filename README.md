@@ -1,9 +1,9 @@
-# GPT3Norm
-GPT-3 powered data normalization functions.
+# Datasynth
+GPT-3 powered data generation and normalization functions.
 
 ## Installation
 
-We recommend that you create a virtual environment before proceeding with the installation of this project as it would help to create an isolated environment for this project. After doing that, you can proceed with the installation by following the steps below.
+We recommend that you create a virtual environment before proceeding with the installation process as it would help to create an isolated environment for this project. After doing that, you can proceed with the installation by following the steps below.
 
 - Clone the repository
 - Install poetry: 
@@ -23,7 +23,7 @@ We recommend that you create a virtual environment before proceeding with the in
 
 All of the magic happens in the pipelines script, but inorder to run it some things need to be considered:
 
--  The project directory contains two folders named `examples` and `templates`. These are folders that contain files for few-shot learning and the prompts that need to be passed to the chain respectively.
+- The project directory contains two folders named `examples` and `templates`. These are folders that contain files for few-shot learning and the prompts that need to be passed to the chain respectively.
 - The `templates` directory contains a generator and normalizer directory which hold the generator and normalizer prompts 
 
 By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for 
