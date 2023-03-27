@@ -35,16 +35,17 @@ We recommend that you create a virtual environment before proceeding with the in
 
 
 # Usage
-
-Under the hood, 
-
+A couple things to note:
 - The project directory contains two folders named `examples` and `templates`. These are folders that contain files for few-shot learning and the prompts that need to be passed to the chain respectively.
 - The `templates` directory contains a generator and normalizer directory which hold the generator and normalizer prompts 
 
-By default, we provide three different templates ```[name, address, price]``` which generates synthetic data for 
+By default, we provide three different templates ```[name, address, price]``` which could be used to generate/normalize synthetic data out of the box.
 
 ## Generation
-Generating synthetic data for testing
+Datasynth could be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do
+
+![]("/datasynth/generator_template.png")
+
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
 
 ## Normalization 
