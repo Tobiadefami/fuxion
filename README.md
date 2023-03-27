@@ -44,7 +44,7 @@ By default, we provide three different templates ```[name, address, price]``` wh
 ## Generation
 Datasynth could be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do
 
-![test]("https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/generator_template.png")
+![test]("https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/generator.png")
 
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
 
