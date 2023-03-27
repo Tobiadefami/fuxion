@@ -42,10 +42,29 @@ A couple things to note:
 By default, we provide three different templates ```[name, address, price]``` which could be used to generate/normalize synthetic data out of the box.
 
 ## Generation
-Datasynth could be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do
+Datasynth can be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do. Below is an example of what the `address.template` file looks like
 
-![test]("https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/generator.png")
+```template
+Generate a list of U.S. postal addresses separated by double newlines.  
 
+Make them as realistic and diverse as possible.
+Include some company address, P.O. boxes, apartment complexes, etc.
+Ensure the addresses are fake.
+
+{{few_shot}}
+
+List:
+```
+
+The first line tells the chain to generate addresses
+
+The second block contains a bunch of creative instructions that determines the quality of the results.
+
+`{{few_shot}}` tells the chain to get few-shot examples provided in the examples folder.
+
+`List` returns the results in a list 
+
+With that established, we show how to run the generator script from the terminal 
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
 
 ## Normalization 
