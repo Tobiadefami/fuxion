@@ -48,7 +48,8 @@ Normalize data into component parts/structured form
 Generating data to train machine learning models
 
 ```bash
-Usage: pipelines.py [OPTIONS] DATATYPE
+Usage: pipelines.py [OPTIONS] DATATYPE                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                            
 ╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ *    datatype      TEXT  [default: None] [required]                                                                                                                                                                                                      │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
@@ -57,21 +58,12 @@ Usage: pipelines.py [OPTIONS] DATATYPE
 │ --dataset-name                  TEXT     [default: None]                                                                                                                                                                                                 │
 │ --temperature                   FLOAT    [default: 0.8]                                                                                                                                                                                                  │
 │ --cache           --no-cache             [default: no-cache]                                                                                                                                                                                             │
-│ --help                                   Show this message and exit. 
+│ --help                                   Show this message and exit.                                                                                                                                                                                     │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
 ```
 
 from the above description, pipelines requires only the datatype argument to be passed to it per run, while all other arguments are optional.
-
-
-
-### Couple things to check: 
-
-1. Add basic tests [done]
-2. Verify that all pipelines work [done]
-3. Write a README to help with the installation and usage of the project [wip]
-4. Generate datapoints for training 
-5. We should train basic checkpoints for all of our current pipelines
-6. Upload checkpoints to huggingface [not a neccessity]
-7. If API timeout(s) we could write files to disk or implement retry logic [wip]
 
 
