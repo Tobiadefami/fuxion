@@ -23,8 +23,6 @@ class GeneratorChain(BaseChain):
     chain_type: ClassVar[str] = "generator"
     temperature: float = 0.0
     cache: bool = False
-    retry_count: int = 3
-    retry_delay: int = 5
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,20 +39,11 @@ class GeneratorChain(BaseChain):
             raise ValueError(
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
-        while self.retry_count > 0:
-            try:
-                self.chain = LLMChain(
+        self.chain = LLMChain(
                     prompt=self._template,
                     llm=OpenAI(temperature=self.temperature, cache=self.cache),
                     verbose=True,
                 )
-                break
-            except Exception as e:
-                print(f"Connection Error: {e}")
-                self.retry_count -= 1
-                if self.retry_count > 0:
-                    print(f"Retrying in {self.retry_delay} seconds...")
-                    time.sleep(self.retry_delay)
 
     @property
     def input_keys(self) -> list[str]:
