@@ -67,7 +67,6 @@ def main(datatype: str, sample_size: int = 3,  temperature: float = 0.5, cache: 
     population = generate_population(datatype)
     few_shot = populate_few_shot(population=population, sample_size=sample_size)
     chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
-    chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
     # No-op thing is a hack, not sure why it won't let me run with no args
     pprint(chain.run(few_shot=few_shot, noop="true"))
 
