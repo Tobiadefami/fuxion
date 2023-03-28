@@ -3,7 +3,6 @@ Langchain + GPT-3* powered data generation and normalization functions.
 # Table of Contents
 * [Description](#Description)
 * [Installation](#installation)
-* [Getting Started](#getting-started)
 * [Usage](#usage)
   * [Gneration](#Generation)
   * [Normalization](#Normalization)
@@ -31,8 +30,6 @@ We recommend that you create a virtual environment before proceeding with the in
   ```bash
   export OPENAI_API_KEY = "your-key"
   ```   
-# Getting started 
-
 
 # Usage
 A couple things to note:
@@ -44,7 +41,7 @@ By default, we provide three different templates ```[name, address, price]``` wh
 ## Generation
 Datasynth can be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do. Below is an example of what the `address.template` file looks like
 
-```template
+```
 Generate a list of U.S. postal addresses separated by double newlines.  
 
 Make them as realistic and diverse as possible.
@@ -56,26 +53,61 @@ Ensure the addresses are fake.
 List:
 ```
 
-The first line tells the chain to generate addresses
+* The first few lines tells the chain to generate addresses and contains a bunch of creative instructions that determines the quality of the results.
 
-The second block contains a bunch of creative instructions that determines the quality of the results.
+* `{{few_shot}}` tells the chain to get few-shot examples provided in the examples folder.
 
-`{{few_shot}}` tells the chain to get few-shot examples provided in the examples folder.
+* `List` returns the results in a list 
 
-`List` returns the results in a list 
+> The same convention should be followed when creating subsequent templates for various data generation tasks.
 
 With that established, we show how to run the generator script from the terminal 
+
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
 
 ## Normalization 
-Normalize data into component parts/structured form
+We can obtain a better understanding of data when it has been normalized into component parts or structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on achieve this. 
+
+``` 
+Format the following address as a list of python dictionaries of the form:
+[
+    { 
+        "house_number": int, 
+        "road": str, 
+        "unit": int, 
+        "unit_type": str, 
+        "po_box_number": int, 
+        "city": str, 
+        "state": str, 
+        "postcode": int 
+    }
+]. 
+
+Use abbreviations for state and road type.
+Use short form zip codes.
+
+Input:
+"{{address}}"
+
+Output:
+[{
+```
+
+* The first few lines tells the chain to format the address passed to it into a list of dict(s)
+
+* It then takes in `{{address}}` as input
+* And returns a list of dict as output
+
+You can run the normalizer by passing it the datatype (name of data to be generated), and an "example"
+
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/normalizers.gif)
 
 ## Pipelines
-Generating data to train machine learning models
+
+We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
 
 ```bash
-Usage: pipelines.py [OPTIONS] DATATYPE                                                                                                                                                                                                                                                                                                                                            
+Usage: pipelines.py [OPTIONS] DATATYPE                                                                                                               
 ╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ *    datatype      TEXT  [default: None] [required]                                                                                                                                                                                                      │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
@@ -88,6 +120,7 @@ Usage: pipelines.py [OPTIONS] DATATYPE
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-from the above description, pipelines requires only the datatype argument to be passed to it per run, while all other arguments are optional.
+From the output above, the only required argument to be passed to `pipelines.py` is the `datatype`, which is just the name of the type of data you want to generate. Other optional arguments like `k` determines the number of samples to be generated and is set to `10` by default. 
 
+This is how it works:
 

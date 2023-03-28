@@ -12,6 +12,7 @@ from few_shot import generate_population, populate_few_shot
 
 
 class DatasetPipeline(BaseChain):
+    
     k: int = 10
     sample_size: int = 3
     dataset_name: Optional[str] = None
@@ -19,7 +20,7 @@ class DatasetPipeline(BaseChain):
     generator: ClassVar[GeneratorChain]
     normalizer: ClassVar[NormalizerChain]
     chain_type = "DatasetPipeline"
-
+    
     # def __init__(self, *args, **kwargs):
     #     self.k = kwargs.pop('k', 10)
     #     super().__init__(*args, **kwargs)
