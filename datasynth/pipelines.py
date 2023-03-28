@@ -78,7 +78,11 @@ class DatasetPipeline(BaseChain):
         else:
             self.dataset_name = f"{self.dataset_name}.json"
 
-        dataset_path = os.path.join("datasets", self.dataset_name)
+        dataset_dir: str = os.path.join(os.path.dirname(__file__), "datasets")
+        if not os.path.exists(dataset_dir):
+            os.makedirs(dataset_dir, exist_ok=True)
+        
+        dataset_path: str = f"{dataset_dir}/{self.dataset_name}"
         with open(dataset_path, "w") as fd:
             json.dump(results, fd)
 
