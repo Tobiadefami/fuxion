@@ -102,17 +102,17 @@ def generate_dataset(
     temperature: float = 0.8,
     cache: bool = False,
 ):
-    """ Generate
+    """ Generate synthetic data and the normalized output
 
     Args:
-        datatype (str): _description_
-        k (int, optional): _description_. Defaults to 10.
-        dataset_name (str, optional): _description_. Defaults to None.
-        temperature (float, optional): _description_. Defaults to 0.8.
-        cache (bool, optional): _description_. Defaults to False.
+        datatype (str): Name of the data to be generated, given by the template's name.
+        k (int, optional): Number of samples to generate | Defaults to 10.
+        dataset_name (str, optional): Name of generated data (user defined) | Defaults to None.
+        temperature (float, optional): Parameter that affects the randomness of the output | Defaults to 0.8.
+        cache (bool, optional): Determine wheher to cache calls to/from the API | Defaults to False.
 
     Returns:
-        _type_: _description_
+        dict[str, dict[str, list[dict[str, Any | str]] | str]] : A dictionary of synthetically generated and normalized data
     """
 
     auto_class(
