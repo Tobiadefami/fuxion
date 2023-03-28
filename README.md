@@ -108,7 +108,7 @@ You can run the normalizer by passing it the datatype (name of data to be genera
 
 ## Pipelines
 
-We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
+We can train machine learning models on the combination of synthetically generated data and their normalized format. To generate such data, we make use of `pipelines.py`.
 
 ```bash
 Usage: pipelines.py [OPTIONS] DATATYPE                                                                                                               
@@ -124,7 +124,7 @@ Usage: pipelines.py [OPTIONS] DATATYPE
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-From the output above, the only required argument to be passed to `pipelines.py` is the `datatype`, which is just the name of the type of data you want to generate. Other optional arguments like `k` determines the number of samples to be generated and is set to `10` by default. 
+From the output above, the only required argument to be passed to `pipelines.py` is `datatype`, which is just the name of the type of data you want to generate. Other optional arguments like `k` determines the number of samples to be generated and is set to `10` by default. 
 
 This is how it works:
 
