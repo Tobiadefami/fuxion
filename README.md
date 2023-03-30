@@ -1,5 +1,5 @@
 # Datasynth
-Langchain + GPT-3* powered data generation and normalization functions. 
+Langchain + GPT-3 powered data generation and normalization functions. 
 # Table of Contents
 * [Description](#Description)
 * [Installation](#installation)
@@ -125,9 +125,10 @@ Usage: pipelines.py [OPTIONS] DATATYPE
 
 From the output above, the only required argument to be passed to `pipelines.py` is the `datatype`, which is just the name of the type of data you want to generate. Other optional arguments like `k` determines the number of samples to be generated and is set to `10` by default. 
 
-Running 
+Running:
 ```bash
 python pipelines.py address --k 20 --dataset-name sample-address
 ```
-Generates 20 samples of generated addresses with their normalized outputs strored in `sample-addresses.json`. Here is an example of what the ![file]()
+![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/pipeline.gif)
+Generates 20 samples of generated addresses with their normalized outputs strored in `sample-addresses.json`. Here is an example of the ![file]()
 
