@@ -20,7 +20,6 @@ class DatasetPipeline(BaseChain):
     generator: ClassVar[GeneratorChain]
     normalizer: ClassVar[NormalizerChain]
     chain_type = "DatasetPipeline"
-    
     # def __init__(self, *args, **kwargs):
     #     self.k = kwargs.pop('k', 10)
     #     super().__init__(*args, **kwargs)
@@ -33,13 +32,14 @@ class DatasetPipeline(BaseChain):
     def output_keys(self) -> List[str]:
         return ["dataset"]
 
+    
     def _call(
         self,
         inputs: dict[str, str],
     ) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
-
         population = generate_population(self.datatype)
+
         while len(generated) < self.k:
             few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             inputs["few_shot"] = few_shot

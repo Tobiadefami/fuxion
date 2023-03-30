@@ -17,6 +17,7 @@ import time
 #     stop=["]"],
 # )
 
+
 class NormalizerChain(BaseChain):
 
     _template: PromptTemplate = PrivateAttr()
@@ -24,13 +25,15 @@ class NormalizerChain(BaseChain):
     chain_type = "normalizer"
     temperature: float = 0.0
     cache: bool = True
+    verbose: bool = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
-                os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
+                os.path.join(TEMPLATE_DIR, "normalizer",
+                             f"{self.datatype}.template")
             ).read(),
             validate_template=True,
             template_format="jinja2",
@@ -40,10 +43,11 @@ class NormalizerChain(BaseChain):
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
         self.chain = LLMChain(
-                    prompt=self._template,
-                    llm=OpenAI(temperature=self.temperature, cache=self.cache, stop=["]"]),
-                    verbose=True,
-                )
+            prompt=self._template,
+            llm=OpenAI(temperature=self.temperature,
+                       cache=self.cache, stop=["]"]),
+            verbose=self.verbose,
+        )
 
     @property
     def input_keys(self) -> list[str]:
@@ -67,9 +71,10 @@ template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
 auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
-def main(datatype: str, example: str, temperature: float = 0.0, cache: bool = False):
+def main(datatype: str, example: str, temperature: float = 0.0, cache: bool = False, verbose: bool = True):
 
-    chain = NormalizerChain.from_name(datatype, temperature=temperature, cache=cache)
+    chain = NormalizerChain.from_name(
+        datatype, temperature=temperature, cache=cache, verbose=verbose)
     pprint(chain.run(**{datatype: example}))
 
 
