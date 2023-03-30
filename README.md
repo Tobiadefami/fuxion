@@ -70,7 +70,7 @@ With that established, we show how to run the generator script from the terminal
 
 ## Normalization 
 
-We can obtain a better understanding of data when it has been normalized into component parts or structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
+Unstructured data is prevalent in databases and is not often useful. Using `datasynth`, we can obtain a better understanding of data and make it useful by normalizing it into component parts or structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
 
 ``` 
 Format the following address as a list of python dictionaries of the form:
@@ -131,4 +131,6 @@ python pipelines.py address --k 20 --dataset-name sample-address
 ```
 ![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/pipeline.gif)
 Generates 20 samples of generated addresses with their normalized outputs strored in `sample-addresses.json`. Here is an example of the [file](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/datasets/sample-address.json)
+
+
 
