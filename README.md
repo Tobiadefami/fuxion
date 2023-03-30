@@ -4,12 +4,12 @@ Langchain + GPT-3 powered data generation and normalization functions.
 * [Description](#Description)
 * [Installation](#installation)
 * [Usage](#usage)
-  * [Gneration](#Generation)
+  * [Generation](#Generation)
   * [Normalization](#Normalization)
   * [Pipelines](#Pipelines)
 
 # Description
-Datasynth is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using this software, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the write prompt to the chain and watch how things unfold :sunglasses:
+Datasynth is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using this software, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the right prompt to the chain and watch how things unfold :sunglasses:
 
 # Installation
 
