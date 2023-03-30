@@ -8,7 +8,8 @@ Format the following address as a list of python dictionaries of the form:
         "po_box_number": int, 
         "city": str, 
         "state": str, 
-        "postcode": int 
+        "postcode": int
+        "timezone": str
     }
 ]. 
 
