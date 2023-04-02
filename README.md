@@ -17,7 +17,7 @@ We recommend that you create a virtual environment before proceeding with the in
 
 - Clone the repository
   ```bash
-  git clone [https <repository url>]
+  git clone git@github.com:Tobiadefami/datasynth.git
   ```
 - Install poetry: 
   ```bash
