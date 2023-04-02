@@ -7,11 +7,12 @@ from datasynth.normalizers import *
 from typing import Any, List, ClassVar, Optional
 from datasynth.base import BaseChain
 from typing import ClassVar
-
+from few_shot import generate_population, populate_few_shot
 # TODO: Figure out how to specify number of example we want out and run until that many examples are generated.  Make sure we save the output to a JSON file so we persist it.
 
 
 class DatasetPipeline(BaseChain):
+    
     k: int = 10
     sample_size: int = 3
     dataset_name: Optional[str] = None
@@ -19,7 +20,6 @@ class DatasetPipeline(BaseChain):
     generator: ClassVar[GeneratorChain]
     normalizer: ClassVar[NormalizerChain]
     chain_type = "DatasetPipeline"
-
     # def __init__(self, *args, **kwargs):
     #     self.k = kwargs.pop('k', 10)
     #     super().__init__(*args, **kwargs)
@@ -32,21 +32,16 @@ class DatasetPipeline(BaseChain):
     def output_keys(self) -> List[str]:
         return ["dataset"]
 
+    
     def _call(
         self,
         inputs: dict[str, str],
     ) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
-
-        example_file: str = os.path.join(EXAMPLE_DIR, f"{self.datatype}.json")
-        population: list[str] = []
-        if os.path.exists(example_file):
-            population = json.load(open(example_file))
+        population = generate_population(self.datatype)
 
         while len(generated) < self.k:
-            sample = random.sample(population, k=self.sample_size)
-            sample_text = "\n\n".join(sample)
-            few_shot = f"Reference Format:\n{sample_text}\n"
+            few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             inputs["few_shot"] = few_shot
             
             generated.extend(self.generator.run(**inputs))
@@ -83,7 +78,11 @@ class DatasetPipeline(BaseChain):
         else:
             self.dataset_name = f"{self.dataset_name}.json"
 
-        dataset_path = os.path.join("datasets", self.dataset_name)
+        dataset_dir: str = os.path.join(os.path.dirname(__file__), "datasets")
+        if not os.path.exists(dataset_dir):
+            os.makedirs(dataset_dir, exist_ok=True)
+        
+        dataset_path: str = f"{dataset_dir}/{self.dataset_name}"
         with open(dataset_path, "w") as fd:
             json.dump(results, fd)
 
@@ -108,17 +107,17 @@ def generate_dataset(
     temperature: float = 0.8,
     cache: bool = False,
 ):
-    """ Generate
+    """ Generate synthetic data and the normalized output
 
     Args:
-        datatype (str): _description_
-        k (int, optional): _description_. Defaults to 10.
-        dataset_name (str, optional): _description_. Defaults to None.
-        temperature (float, optional): _description_. Defaults to 0.8.
-        cache (bool, optional): _description_. Defaults to False.
+        datatype (str): Name of the data to be generated, given by the template's name.
+        k (int, optional): Number of samples to generate | Defaults to 10.
+        dataset_name (str, optional): Name of generated data (user defined) | Defaults to None.
+        temperature (float, optional): Parameter that affects the randomness of the output | Defaults to 0.8.
+        cache (bool, optional): Determine wheher to cache calls to/from the API | Defaults to False.
 
     Returns:
-        _type_: _description_
+        dict[str, dict[str, list[dict[str, Any | str]] | str]] : A dictionary of synthetically generated and normalized data
     """
 
     auto_class(

@@ -10,6 +10,7 @@ from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 import typing
 import time
+from few_shot import populate_few_shot, generate_population
 # davinci = OpenAI(
 #     temperature=0.8,
 #     cache=True,
@@ -22,8 +23,7 @@ class GeneratorChain(BaseChain):
     chain_type: ClassVar[str] = "generator"
     temperature: float = 0.0
     cache: bool = False
-    retry_count: int = 3
-    retry_delay: int = 5
+    verbose: bool = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,25 +35,15 @@ class GeneratorChain(BaseChain):
             validate_template=False,
             template_format="jinja2",
         )
-
         if self.temperature > 2.0:
             raise ValueError(
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
-        while self.retry_count > 0:
-            try:
-                self.chain = LLMChain(
+        self.chain = LLMChain(
                     prompt=self._template,
                     llm=OpenAI(temperature=self.temperature, cache=self.cache),
-                    verbose=True,
+                    verbose=self.verbose,
                 )
-                break
-            except Exception as e:
-                print(f"Connection Error: {e}")
-                self.retry_count -= 1
-                if self.retry_count > 0:
-                    print(f"Retrying in {self.retry_delay} seconds...")
-                    time.sleep(self.retry_delay)
 
     @property
     def input_keys(self) -> list[str]:
@@ -73,10 +63,12 @@ template_dir = os.path.join(TEMPLATE_DIR, "generator")
 auto_class(template_dir, GeneratorChain, "Generator")
 
 
-def main(datatype: str, temperature: float = 0.5, cache: bool = False):
-    chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache)
+def main(datatype: str, sample_size: int = 3,  temperature: float = 0.5, cache: bool = False, verbose: bool = True):
+    population = generate_population(datatype)
+    few_shot = populate_few_shot(population=population, sample_size=sample_size)
+    chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache, verbose = verbose)
     # No-op thing is a hack, not sure why it won't let me run with no args
-    pprint(chain.run(noop="true"))
+    pprint(chain.run(few_shot=few_shot, noop="true"))
 
 
 if __name__ == "__main__":
