@@ -2,13 +2,15 @@
 LangChain + LLM powered data generation and normalization functions. 
 Datasynth helps you generate a fully synthetic dataset with LLM APIs to train a task-specific model you can run on your own GPU.
 
+Preliminary models for name, price, and address standardization are available on [HuggingFace](https://huggingface.co/PragmaticMachineLearning).
+
 # Table of Contents
-* [Description](#Description)
+* [Description](#description)
 * [Installation](#installation)
 * [Usage](#usage)
-  * [Generation](#Generation)
-  * [Normalization](#Normalization)
-  * [Pipelines](#Pipelines)
+  * [Generation](#generation)
+  * [Normalization](#normalization)
+  * [Pipelines](#pipelines)
 
 # Description
 Datasynth is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using this software, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the right prompt to the chain and watch how things unfold :sunglasses:
@@ -19,7 +21,7 @@ We recommend that you create a virtual environment before proceeding with the in
 
 - Clone the repository
   ```bash
-  git clone [https <repository url>]
+  git clone git@github.com:Tobiadefami/datasynth.git
   ```
 - Install poetry: 
   ```bash
