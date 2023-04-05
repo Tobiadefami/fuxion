@@ -1,5 +1,7 @@
 # Datasynth
-Langchain + GPT-3 powered data generation and normalization functions. 
+LangChain + LLM powered data generation and normalization functions. 
+Datasynth helps you generate a fully synthetic dataset with LLM APIs to train a task-specific model you can run on your own GPU.
+
 # Table of Contents
 * [Description](#Description)
 * [Installation](#installation)
