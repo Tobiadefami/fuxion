@@ -70,7 +70,7 @@ List:
 
 With that established, we show how to run the generator script from the terminal 
 
-![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/generator.gif)
+![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/generator.gif)
 
 ## Normalization 
 
@@ -108,7 +108,7 @@ Output:
 
 You can run the normalizer by passing it the datatype (name of data to be generated), and an "example"
 
-![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/normalizer.gif)
+![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/normalizer.gif)
 
 ## Pipelines
 We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
@@ -133,7 +133,7 @@ Running:
 ```bash
 python pipelines.py address --k 20 --dataset-name sample-address
 ```
-![](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/terminal_gifs/pipeline.gif)
+![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/pipeline.gif)
 Generates 20 samples of generated addresses with their normalized outputs strored in `sample-address.json`. Here is a [link](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/datasets/sample-address.json) to the file
 
 
