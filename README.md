@@ -2,6 +2,8 @@
 LangChain + LLM powered data generation and normalization functions. 
 Datasynth helps you generate a fully synthetic dataset with LLM APIs to train a task-specific model you can run on your own GPU.
 
+![datasynth](/assets/datasynth.png)
+
 Preliminary models for name, price, and address standardization are available on [HuggingFace](https://huggingface.co/PragmaticMachineLearning).
 
 # Table of Contents
