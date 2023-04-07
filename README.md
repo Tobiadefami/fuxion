@@ -1,7 +1,7 @@
 # Datasynth
 Langchain + GPT-3 powered data generation and normalization functions. 
 
-![datasynth]("/assets/datasynth.png")
+![datasynth](/assets/datasynth.png)
 # Table of Contents
 * [Description](#Description)
 * [Installation](#installation)
