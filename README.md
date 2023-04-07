@@ -1,5 +1,7 @@
 # Datasynth
 Langchain + GPT-3 powered data generation and normalization functions. 
+
+![datasynth]("/assets/datasynth.png")
 # Table of Contents
 * [Description](#Description)
 * [Installation](#installation)
@@ -7,6 +9,7 @@ Langchain + GPT-3 powered data generation and normalization functions.
   * [Generation](#Generation)
   * [Normalization](#Normalization)
   * [Pipelines](#Pipelines)
+* [Training](#Training)
 
 # Description
 Datasynth is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using this software, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the right prompt to the chain and watch how things unfold :sunglasses:
@@ -133,4 +136,6 @@ python pipelines.py address --k 20 --dataset-name sample-address
 Generates 20 samples of generated addresses with their normalized outputs strored in `sample-address.json`. Here is a [link](https://github.com/Tobiadefami/datasynth/blob/api-tweaks/datasynth/datasets/sample-address.json) to the file
 
 
+
+# Training
 
