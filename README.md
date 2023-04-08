@@ -74,7 +74,7 @@ With that established, we show how to run the generator script from the terminal
 
 ## Normalization 
 
-It's often necessary to transform data into a standardized form before storing in a database. Using `datasynth`, can make unstructured data useful by breaking it up into it's component parts and normalizing into a more structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
+It's often necessary to transform data into a standardized form before storing in a database. Using Datasynth, you can make unstructured data useful by breaking it up into it's component parts and normalizing into a more structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
 
 ``` 
 Format the following address as a list of python dictionaries of the form:
