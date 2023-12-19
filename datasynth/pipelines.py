@@ -1,6 +1,5 @@
 import typer
 import time
-import random
 from typing import Optional
 from datasynth.generators import *
 from datasynth.normalizers import *
@@ -44,15 +43,15 @@ class DatasetPipeline(BaseChain):
             few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             inputs["few_shot"] = few_shot
             
-            generated.extend(self.generator.run(**inputs))
+            print("generated content:", generated.extend(self.generator.run(**inputs)))
 
         outputs = []
         for example in generated[: self.k]:
             try:
                 outputs.append(
                     {
-                        "input": example,
-                        "output": self.normalizer.run(
+                        "generated_input": example,
+                        "normalized_output": self.normalizer.run(
                             **{self.normalizer.input_keys[0]: example.strip()}
                         ),
                     }

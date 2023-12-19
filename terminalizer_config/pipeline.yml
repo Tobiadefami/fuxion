@@ -1,0 +1,171 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /home/chief/datasynth/datasynth
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 125
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 35
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: datasynth
+    style: []
+      # border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 12
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 482
+    content: "\e]0;chief@pop-os:~/datasynth/datasynth\e\\\e]7;file://pop-os/home/chief/datasynth/datasynth\e\\\e[?2004hchief@pop-os:~/datasynth/datasynth$ "
+  - delay: 1822
+    content: "\e[7mpython pipelines.py address --k 20 --dataset-name sample-address\e[27m"
+  - delay: 366
+    content: "\a\r\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[C\e[Cpython pipelines.py address --k 20 --dataset-name sample-address"
+  - delay: 3712
+    content: "\r\n\e[?2004l\r"
+  - delay: 645
+    content: "\r\n\r\n\e[1m> Entering new AddressGenerator chain...\e[0m\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mGenerate a list of U.S. postal addresses separated by double newlines.  \r\n\r\nMake them as realistic and diverse as possible.\r\nInclude some company address, P.O. boxes, apartment complexes, zipcode, Timezone, etc.\r\nEnsure the addresses are fake.\r\n\r\nReference Format:\r\n5425 N Kolb Rd, Tucson, Arkansas\r\n\r\n931 S Maple Ave, Montebello, California\r\n\r\n403 W Polk St, Harlingen, Texas, United States\r\n\r\n\r\nList:\e[0m\r\n"
+  - delay: 8732
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressGenerator chain...\e[0m\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mGenerate a list of U.S. postal addresses separated by double newlines.  \r\n\r\nMake them as realistic and diverse as possible.\r\nInclude some company address, P.O. boxes, apartment complexes, zipcode, Timezone, etc.\r\nEnsure the addresses are fake.\r\n\r\nReference Format:\r\n732 N Pine Hill Rd, Birmingham, Alaska\r\n\r\n931 S Maple Ave, Montebello, California\r\n\r\n5425 N Kolb Rd, Tucson, Arkansas\r\n\r\n\r\nList:\e[0m\r\n"
+  - delay: 5021
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': 'P.O. Box 8337, Cheyenne, Wyoming 82003'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"P.O. Box 8337, Cheyenne, Wyoming 82003\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2532
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '943 N Acacia Dr, Orlando, Florida 32801'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"943 N Acacia Dr, Orlando, Florida 32801\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3699
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '136 N Grand Ave, Pullman, Washington 99163'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"136 N Grand Ave, Pullman, Washington 99163\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3794
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '33 S Main St, Madison, Wisconsin 53711'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"33 S Main St, Madison, Wisconsin 53711\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3033
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '360 W 15th St, Des Moines, Iowa 50309'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"360 W 15th St, Des Moines, Iowa 50309\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3115
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1150 Washington St, Boston, Massachusetts 02118'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1150 Washington St, Boston, Massachusetts 02118\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2859
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '2355 Red Square Rd, Newark, New Jersey 07102'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"2355 Red Square Rd, Newark, New Jersey 07102\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2402
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': 'Apartments 65, 120 E. Baltimore Street, Philadelphia, Pennsylvania 19100'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"Apartments 65, 120 E. Baltimore Street, Philadelphia, Pennsylvania 19100\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3202
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1844 W Sunnyside Dr, Scottsdale, Arizona 85250'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1844 W Sunnyside Dr, Scottsdale, Arizona 85250\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2866
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '2480 Cleveland Ave, Cincinnati, Ohio 45206'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"2480 Cleveland Ave, Cincinnati, Ohio 45206\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3035
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1525 Walnut Rd, Raleigh, North Carolina 27601'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1525 Walnut Rd, Raleigh, North Carolina 27601\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2883
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '4698 P.O. Box 8279, Nashville, Tennessee 37206'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"4698 P.O. Box 8279, Nashville, Tennessee 37206\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2605
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1355 S. 18th Street, Denver, Colorado 80294'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1355 S. 18th Street, Denver, Colorado 80294\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2694
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '741 Lafayette St, Savannah, Georgia 31401'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"741 Lafayette St, Savannah, Georgia 31401\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2719
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '547 S. Northern Blvd, Tulsa, Oklahoma 74103'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"547 S. Northern Blvd, Tulsa, Oklahoma 74103\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3127
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1890 W. Park Place, Omaha, Nebraska 68101'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1890 W. Park Place, Omaha, Nebraska 68101\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2929
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '451 N. Santa Monica Blvd., Los Angeles, California 90038'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"451 N. Santa Monica Blvd., Los Angeles, California 90038\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3025
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1012 N. Jackson Ave, Memphis'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1012 N. Jackson Ave, Memphis\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2625
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': 'P.O. Box 547, Los Angeles, California 90048'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"P.O. Box 547, Los Angeles, California 90048\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 2938
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\r\n\e[1m> Entering new AddressNormalizer chain...\e[0m\r\ninput >> {'address': '1 Main Street Apartment 4, Anchorage, Alaska 99501'}\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\nPrompt after formatting:\r\n\e[32;1m\e[1;3mFormat the following address as a list of python dictionaries of the form:\r\n[\r\n    { \r\n        \"house_number\": int, \r\n        \"road\": str, \r\n        \"unit\": int, \r\n        \"unit_type\": str, \r\n        \"po_box_number\": int, \r\n        \"city\": str, \r\n        \"state\": str, \r\n        \"postcode\": int\r\n        \"timezone\": str\r\n    }\r\n]. \r\n\r\nUse abbreviations for state and road type.\r\nUse short form zip codes.\r\n\r\nInput:\r\n\"1 Main Street Apartment 4, Anchorage, Alaska 99501\"\r\n\r\nOutput:\r\n[{\e[0m\r\n"
+  - delay: 3316
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n"
+  - delay: 130
+    content: "\e]0;chief@pop-os:~/datasynth/datasynth\e\\\e]7;file://pop-os/home/chief/datasynth/datasynth\e\\\e[?2004hchief@pop-os:~/datasynth/datasynth$ "
+  - delay: 56350
+    content: "\e[?2004l\r\r\nlogout\r\n"

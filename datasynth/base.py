@@ -36,12 +36,10 @@ def template_names(path: str) -> list[str]:
 
     Returns:
         list[str]: a list of template names, eg: address, name, price
-    """
-    result: list[str] = []
+    #"""
     items: list[str] = os.listdir(path)
-    for file in items:
-        result.append(os.path.splitext(file)[0])
-    return result
+
+    return [os.path.splitext(path)[0] for path in items]
 
 
 def auto_class(

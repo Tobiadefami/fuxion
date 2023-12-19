@@ -1,0 +1,161 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /home/chief/datasynth/datasynth
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 125
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 35
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: datasynth
+    style: []
+      # border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 12
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 531
+    content: "\e]0;chief@pop-os:~/datasynth/datasynth\e\\\e]7;file://pop-os/home/chief/datasynth/datasynth\e\\\e[?2004hchief@pop-os:~/datasynth/datasynth$ "
+  - delay: 1325
+    content: p
+  - delay: 287
+    content: 'y'
+  - delay: 176
+    content: t
+  - delay: 128
+    content: h
+  - delay: 81
+    content: o
+  - delay: 127
+    content: 'n'
+  - delay: 177
+    content: ' '
+  - delay: 167
+    content: g
+  - delay: 96
+    content: e
+  - delay: 281
+    content: 'nerators.py '
+  - delay: 662
+    content: a
+  - delay: 241
+    content: d
+  - delay: 144
+    content: d
+  - delay: 208
+    content: r
+  - delay: 167
+    content: e
+  - delay: 241
+    content: s
+  - delay: 183
+    content: s
+  - delay: 255
+    content: "\r\n\e[?2004l\r"
+  - delay: 547
+    content: "\r\n\r\n\e[1m> Entering new AddressGenerator chain...\e[0m\r\n\r\n\r\n\e[1m> Entering new LLMChain chain...\e[0m\r\n"
+  - delay: 12
+    content: "Prompt after formatting:\r\n\e[32;1m\e[1;3mGenerate a list of U.S. postal addresses separated by double newlines.  \r\n\r\nMake them as realistic and diverse as possible.\r\nInclude some company address, P.O. boxes, apartment complexes, zipcode, Timezone, etc.\r\nEnsure the addresses are fake.\r\n\r\nReference Format:\r\n5425 N Kolb Rd, Tucson, Arkansas\r\n\r\n931 S Maple Ave, Montebello, California\r\n\r\n732 N Pine Hill Rd, Birmingham, Alaska\r\n\r\n\r\nList:\e[0m\r\n"
+  - delay: 7552
+    content: "\r\n\e[1m> Finished chain.\e[0m\r\n\r\n\e[1m> Finished chain.\e[0m\r\n['\\nP.O. Box 658, San Diego, California 92168',\r\n '541 W Main St, Madison, Wisconsin 53703',\r\n '3249 N Pleasant Ave, San Francisco, California 94123',\r\n 'Apartment 3E, 456 S Elm St, Pittsburgh, Pennsylvania 15220',\r\n 'Suite 6, 468 N Elm Ave, Houston, Texas 77052',\r\n '4257 S Main St, Jacksonville, Florida 32210',\r\n 'P.O. Box 948, Denver, Colorado 80205',\r\n '2571 W Pine St, Miami, Florida 33125',\r\n 'Apartment 4B, 845 S Maple Ave, Minneapolis, Minnesota 55401',\r\n 'Suite 5, 632 N Oak St, Omaha, Nebraska 68102',\r\n 'P.O. Box 875, Las Vegas, Nevada 89101',\r\n '3249 E Pine Hill Rd, Nashville, Tennessee 37210',\r\n 'Apartment 2F, 541 W Main St, Columbus, Ohio 43202',\r\n 'Suite 8, 468 N Maple Ave, Charlotte, North Carolina 28202',\r\n 'P.O. Box 948, Phoenix, Arizona 85020',\r\n '2571 N Pleasant St, Tulsa, Oklahoma 74125',\r\n 'Apartment 6B,']\r\n"
+  - delay: 112
+    content: "\e]0;chief@pop-os:~/datasynth/datasynth\e\\\e]7;file://pop-os/home/chief/datasynth/datasynth\e\\\e[?2004hchief@pop-os:~/datasynth/datasynth$ "
+  - delay: 3142
+    content: "\e[?2004l\r\r\nlogout\r\n"

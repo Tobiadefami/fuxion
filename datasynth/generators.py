@@ -8,8 +8,6 @@ import typer
 from datasynth import TEMPLATE_DIR
 from pprint import pprint
 from datasynth.base import BaseChain, auto_class
-import typing
-import time
 from few_shot import populate_few_shot, generate_population
 # davinci = OpenAI(
 #     temperature=0.8,
@@ -54,7 +52,7 @@ class GeneratorChain(BaseChain):
         return ["generated"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
-        generated_items = self.chain.run(**inputs).split("\n\n")
+        generated_items = self.chain.run(**inputs).split("\n---\n")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
