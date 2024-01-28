@@ -1,14 +1,15 @@
 import os
 from typing import ClassVar
 from pydantic import Field, PrivateAttr
-from langchain import LLMChain
-from langchain import OpenAI
-from langchain import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_openai import OpenAI
+from langchain.prompts import PromptTemplate
 import typer
 from datasynth import TEMPLATE_DIR
 from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 from few_shot import populate_few_shot, generate_population
+
 # davinci = OpenAI(
 #     temperature=0.8,
 #     cache=True,
@@ -16,7 +17,7 @@ from few_shot import populate_few_shot, generate_population
 
 
 class GeneratorChain(BaseChain):
-    _template: PromptTemplate = PrivateAttr()
+    template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type: ClassVar[str] = "generator"
     temperature: float = 0.0
@@ -25,7 +26,7 @@ class GeneratorChain(BaseChain):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._template = PromptTemplate(
+        self.template = PromptTemplate(
             input_variables=["few_shot"],
             template=open(
                 os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
@@ -38,7 +39,7 @@ class GeneratorChain(BaseChain):
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
         self.chain = LLMChain(
-                    prompt=self._template,
+                    prompt=self.template,
                     llm=OpenAI(temperature=self.temperature, cache=self.cache),
                     verbose=self.verbose,
                 )
@@ -52,7 +53,8 @@ class GeneratorChain(BaseChain):
         return ["generated"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
-        generated_items = self.chain.run(**inputs).split("\n---\n")
+        print(f"inputs: {inputs}")
+        generated_items = self.chain.invoke(**inputs).split("\n---\n")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
@@ -66,7 +68,7 @@ def main(datatype: str, sample_size: int = 3,  temperature: float = 0.5, cache: 
     few_shot = populate_few_shot(population=population, sample_size=sample_size)
     chain = GeneratorChain.from_name(datatype, temperature=temperature, cache=cache, verbose = verbose)
     # No-op thing is a hack, not sure why it won't let me run with no args
-    pprint(chain.run(few_shot=few_shot, noop="true"))
+    pprint(chain.invoke(few_shot=few_shot, noop="true"))
 
 
 if __name__ == "__main__":

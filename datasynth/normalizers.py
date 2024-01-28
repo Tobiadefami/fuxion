@@ -4,11 +4,12 @@ from pprint import pprint
 import os
 import typer
 from pydantic import Field, PrivateAttr
-from langchain import OpenAI, PromptTemplate, LLMChain
 from datasynth.base import BaseChain, auto_class
 from datasynth import TEMPLATE_DIR, EXAMPLE_DIR
 from typing import Any
-import time
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_openai import OpenAI
 
 
 # structured_davinci = OpenAI(
@@ -17,10 +18,11 @@ import time
 #     stop=["]"],
 # )
 
+optional_params = {"stop": ["]"]}
 
 class NormalizerChain(BaseChain):
 
-    _template: PromptTemplate = PrivateAttr()
+    template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
     temperature: float = 0.0
@@ -29,7 +31,7 @@ class NormalizerChain(BaseChain):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._template = PromptTemplate(
+        self.template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
                 os.path.join(TEMPLATE_DIR, "normalizer",
@@ -43,9 +45,9 @@ class NormalizerChain(BaseChain):
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
         self.chain = LLMChain(
-            prompt=self._template,
+            prompt=self.template,
             llm=OpenAI(temperature=self.temperature,
-                       cache=self.cache, stop=["]"]),
+                       cache=self.cache, model_kwargs=optional_params),
             verbose=self.verbose,
         )
 
@@ -59,7 +61,7 @@ class NormalizerChain(BaseChain):
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
         print("input >>", inputs)
-        output = "[{" + self.chain.run(**inputs) + "]"
+        output = "[{" + self.chain.invoke(**inputs) + "]"
         try:
             return {"normalized": ast.literal_eval(output)}
         except json.JSONDecodeError:
@@ -75,7 +77,7 @@ def main(datatype: str, example: str, temperature: float = 0.0, cache: bool = Fa
 
     chain = NormalizerChain.from_name(
         datatype, temperature=temperature, cache=cache, verbose=verbose)
-    pprint(chain.run(**{datatype: example}))
+    pprint(chain.invoke(**{datatype: example}))
 
 
 if __name__ == "__main__":

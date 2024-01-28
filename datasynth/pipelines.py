@@ -7,7 +7,6 @@ from typing import Any, List, ClassVar, Optional
 from datasynth.base import BaseChain
 from typing import ClassVar
 from few_shot import generate_population, populate_few_shot
-# TODO: Figure out how to specify number of example we want out and run until that many examples are generated.  Make sure we save the output to a JSON file so we persist it.
 
 
 class DatasetPipeline(BaseChain):
@@ -43,7 +42,7 @@ class DatasetPipeline(BaseChain):
             few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             inputs["few_shot"] = few_shot
             
-            print("generated content:", generated.extend(self.generator.run(**inputs)))
+            print("generated content:", generated.extend(self.generator.invoke(**inputs)))
 
         outputs = []
         for example in generated[: self.k]:
@@ -51,7 +50,7 @@ class DatasetPipeline(BaseChain):
                 outputs.append(
                     {
                         "generated_input": example,
-                        "normalized_output": self.normalizer.run(
+                        "normalized_output": self.normalizer.invoke(
                             **{self.normalizer.input_keys[0]: example.strip()}
                         ),
                     }
@@ -62,8 +61,8 @@ class DatasetPipeline(BaseChain):
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": outputs,
-                "generator_prompt": self.generator._template.template,
-                "normalizer_prompt": self.normalizer._template.template,
+                "generator_prompt": self.generator.template.template,
+                "normalizer_prompt": self.normalizer.template.template,
             }
         }
 
@@ -130,7 +129,7 @@ def generate_dataset(
     )
     chain = DatasetPipeline.from_name(datatype, k=k, dataset_name=dataset_name)
     # No-op thing is a hack, not sure why it won't let me run with no args
-    return chain.run(noop="true")
+    return chain.invoke(noop="true")
 
 
 if __name__ == "__main__":
