@@ -2,7 +2,7 @@ from transformers import TrainingArguments
 import fire
 import typer
 from transformers import Trainer, AutoConfig
-from datasynth.dataset import tokenizer, NormalizationDataset
+from datasynth.finetuning.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
 from transformers import T5ForConditionalGeneration
 import wandb
