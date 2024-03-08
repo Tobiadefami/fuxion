@@ -10,10 +10,7 @@ from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 from few_shot import populate_few_shot, generate_population
 
-# davinci = OpenAI(
-#     temperature=0.8,
-#     cache=True,
-# )
+
 
 
 class GeneratorChain(BaseChain):
