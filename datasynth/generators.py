@@ -11,6 +11,7 @@ from datasynth.base import BaseChain, auto_class
 from few_shot import populate_few_shot, generate_population
 
 
+
 class GeneratorChain(BaseChain):
     template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
