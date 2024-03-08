@@ -11,7 +11,7 @@ from few_shot import generate_population, populate_few_shot
 
 class DatasetPipeline(BaseChain):
 
-    k: int
+    k: int = 10
     sample_size: int = 3
     dataset_name: Optional[str] = None
     manual_review: bool = False
@@ -69,7 +69,6 @@ class DatasetPipeline(BaseChain):
                 break
 
         outputs = []
-        import ipdb; ipdb.set_trace()
         for example in generated[: self.k]:
             try:
                 normalizer_inputs: dict[str, Any] = {
