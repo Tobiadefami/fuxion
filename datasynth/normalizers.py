@@ -5,20 +5,15 @@ import os
 import typer
 from pydantic import Field, PrivateAttr
 from datasynth.base import BaseChain, auto_class
-from datasynth import TEMPLATE_DIR, EXAMPLE_DIR
+from datasynth import TEMPLATE_DIR
 from typing import Any
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_openai import OpenAI
 
 
-# structured_davinci = OpenAI(
-#     temperature=0,
-#     cache=True,
-#     stop=["]"],
-# )
-
 optional_params = {"stop": ["]"]}
+
 
 class NormalizerChain(BaseChain):
 
@@ -34,8 +29,7 @@ class NormalizerChain(BaseChain):
         self.template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
-                os.path.join(TEMPLATE_DIR, "normalizer",
-                             f"{self.datatype}.template")
+                os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
             ).read(),
             validate_template=True,
             template_format="jinja2",
@@ -46,8 +40,11 @@ class NormalizerChain(BaseChain):
             )
         self.chain = LLMChain(
             prompt=self.template,
-            llm=OpenAI(temperature=self.temperature,
-                       cache=self.cache, model_kwargs=optional_params),
+            llm=OpenAI(
+                temperature=self.temperature,
+                cache=self.cache,
+                model_kwargs=optional_params,
+            ),
             verbose=self.verbose,
         )
 
@@ -59,9 +56,13 @@ class NormalizerChain(BaseChain):
     def output_keys(self) -> list[str]:
         return ["normalized"]
 
-    def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
+    def run(self, inputs: dict[str, str] | None = None) -> dict[str, list[Any]]:
+        return self._call(inputs)
+
+    def _call(self, inputs: dict[str, str] | None = None) -> dict[str, list[Any]]:
         print("input >>", inputs)
-        output = "[{" + self.chain.invoke(**inputs) + "]"
+        inputs = inputs or {}
+        output = "[{" + self.chain.invoke(inputs)["text"] + "]"
         try:
             return {"normalized": ast.literal_eval(output)}
         except json.JSONDecodeError:
@@ -73,11 +74,19 @@ template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
 auto_class(template_dir, NormalizerChain, "Normalizer")
 
 
-def main(datatype: str, example: str, temperature: float = 0.0, cache: bool = False, verbose: bool = True):
+def main(
+    datatype: str,
+    example: str,
+    temperature: float = 0.0,
+    cache: bool = False,
+    verbose: bool = True,
+):
 
     chain = NormalizerChain.from_name(
-        datatype, temperature=temperature, cache=cache, verbose=verbose)
-    pprint(chain.invoke(**{datatype: example}))
+        datatype, temperature=temperature, cache=cache, verbose=verbose
+    )
+    inputs = {datatype: example}
+    pprint(chain.run(inputs))
 
 
 if __name__ == "__main__":
