@@ -12,7 +12,6 @@ from few_shot import populate_few_shot, generate_population
 
 
 
-
 class GeneratorChain(BaseChain):
     template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
@@ -49,14 +48,10 @@ class GeneratorChain(BaseChain):
     def output_keys(self) -> list[str]:
         return ["generated"]
 
-    def run(self, inputs: dict[str, str]| None = None) -> dict[str, list[str]]:
-        return self._call(inputs)
-    
-    def _call(self, inputs: dict[str, str]| None = None) -> dict[str, list[str]]:
+    def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
         print(f"inputs: {inputs}")
-        inputs = inputs or {}
-        
-        generated_items = self.chain.invoke(input=inputs)['text'].split("\n---\n")
+
+        generated_items = self.chain.invoke(input=inputs)["text"].split("\n---\n")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
@@ -77,8 +72,7 @@ def main(
     chain = GeneratorChain.from_name(
         datatype, temperature=temperature, cache=cache, verbose=verbose
     )
-    # No-op thing is a hack, not sure why it won't let me run with no args
-    pprint(chain.run(few_shot))
+    pprint(chain.invoke(few_shot))
 
 
 if __name__ == "__main__":

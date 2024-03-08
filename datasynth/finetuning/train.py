@@ -1,11 +1,12 @@
 from transformers import TrainingArguments
-import fire
 import typer
 from transformers import Trainer, AutoConfig
-from datasynth.dataset import tokenizer, NormalizationDataset
+from datasynth.finetuning.dataset import tokenizer, NormalizationDataset
 from transformers import DataCollatorForSeq2Seq
 from transformers import T5ForConditionalGeneration
-import wandb
+import mlflow
+
+app = typer.Typer(pretty_exceptions_enable=False)
 
 
 def test_generation(model, test_example):
@@ -19,6 +20,7 @@ def test_generation(model, test_example):
     print("Expected Output", expected_output_text)
 
 
+@app.command()
 def main(
     experiment_name,
     data_file: str | None = None,
@@ -72,7 +74,7 @@ def main(
         warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
         # max_steps=max_steps,
-        report_to="wandb",
+        # report_to="wandb",
         gradient_checkpointing=gradient_checkpointing
         # fp16=True,
     )
@@ -96,10 +98,11 @@ def main(
     )
     trainer = Trainer(**trainer_kwargs)
 
+    mlflow.autolog()
     trainer.train()
     test_generation(model, test_example=train_dataset[0])
     trainer.save_model()
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    app()

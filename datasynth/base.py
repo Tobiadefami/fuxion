@@ -41,7 +41,6 @@ def template_names(path: str) -> list[str]:
 
     return [os.path.splitext(path)[0] for path in items]
 
-
 def auto_class(
     path: str,
     base_cls: type,

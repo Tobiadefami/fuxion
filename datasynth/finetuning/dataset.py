@@ -3,13 +3,14 @@ from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 from typing import Any
 
-tokenizer = AutoTokenizer.from_pretrained("tiiuae/falcon-7b")
-
+tokenizer = AutoTokenizer.from_pretrained("google/byt5-small")
+if tokenizer.pad_token is None:
+    tokenizer.add_special_tokens({"pad_token": "[PAD]"})
 
 def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]:
 
     encoded_inputs = tokenizer(
-        example["input"],
+        example["generated_input"],
         padding="max_length",
         max_length=max_length,
         return_tensors="pt",
@@ -18,7 +19,7 @@ def preprocess(example: dict[str, Any], max_length: int = 512) -> dict[str, Any]
     )
 
     encoded_outputs = tokenizer(
-        json.dumps(example["output"]),
+        json.dumps(example["normalized_output"]),
         padding="max_length",
         max_length=max_length,
         return_tensors="pt",
@@ -59,6 +60,6 @@ class NormalizationDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = NormalizationDataset(
-        json_file="/home/chief/GPT3Norm/datasynth/datasets/names-100.json",
+        json_file="/home/chief/datasynth/datasynth/datasets/qa1000.json",
     )
     print(dataset[15])

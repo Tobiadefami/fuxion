@@ -56,12 +56,9 @@ class NormalizerChain(BaseChain):
     def output_keys(self) -> list[str]:
         return ["normalized"]
 
-    def run(self, inputs: dict[str, str] | None = None) -> dict[str, list[Any]]:
-        return self._call(inputs)
 
-    def _call(self, inputs: dict[str, str] | None = None) -> dict[str, list[Any]]:
+    def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
         print("input >>", inputs)
-        inputs = inputs or {}
         output = "[{" + self.chain.invoke(inputs)["text"] + "]"
         try:
             return {"normalized": ast.literal_eval(output)}
@@ -86,7 +83,7 @@ def main(
         datatype, temperature=temperature, cache=cache, verbose=verbose
     )
     inputs = {datatype: example}
-    pprint(chain.run(inputs))
+    pprint(chain.invoke(inputs))
 
 
 if __name__ == "__main__":

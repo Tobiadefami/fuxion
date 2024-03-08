@@ -69,6 +69,7 @@ class DatasetPipeline(BaseChain):
                 break
 
         outputs = []
+        import ipdb; ipdb.set_trace()
         for example in generated[: self.k]:
             try:
                 normalizer_inputs: dict[str, Any] = {
@@ -81,10 +82,9 @@ class DatasetPipeline(BaseChain):
                         "normalized_output": self.normalizer.invoke(normalizer_inputs),
                     }
                 )
-
+            
             except:
                 continue
-
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": outputs,
