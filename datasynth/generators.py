@@ -2,14 +2,16 @@ import os
 from typing import ClassVar
 from pydantic import Field, PrivateAttr
 from langchain.chains import LLMChain
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 from langchain.prompts import PromptTemplate
 import typer
 from datasynth import TEMPLATE_DIR
 from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 from few_shot import populate_few_shot, generate_population
+from settings import SEPARATOR
 
+separator = SEPARATOR
 
 
 class GeneratorChain(BaseChain):
@@ -47,11 +49,11 @@ class GeneratorChain(BaseChain):
     @property
     def output_keys(self) -> list[str]:
         return ["generated"]
-
+    
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
         print(f"inputs: {inputs}")
-
-        generated_items = self.chain.invoke(input=inputs)["text"].split("\n---\n")
+        generated_items = self.chain.invoke(input=inputs)["text"].split(separator)
+        print(f"generated_items: {generated_items}")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
