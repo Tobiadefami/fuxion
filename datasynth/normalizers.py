@@ -9,7 +9,7 @@ from datasynth import TEMPLATE_DIR
 from typing import Any
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 
 
 optional_params = {"stop": ["]"]}
@@ -43,6 +43,7 @@ class NormalizerChain(BaseChain):
             llm=OpenAI(
                 temperature=self.temperature,
                 cache=self.cache,
+                # model="gpt-4",
                 model_kwargs=optional_params,
             ),
             verbose=self.verbose,
@@ -60,6 +61,7 @@ class NormalizerChain(BaseChain):
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
         print("input >>", inputs)
         output = "[{" + self.chain.invoke(inputs)["text"] + "]"
+        print("OUTPUTS >>", output)
         try:
             return {"normalized": ast.literal_eval(output)}
         except json.JSONDecodeError:

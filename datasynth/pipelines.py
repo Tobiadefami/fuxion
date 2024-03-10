@@ -6,7 +6,7 @@ from datasynth.normalizers import *
 from typing import Any, List, ClassVar, Optional
 from datasynth.base import BaseChain
 from typing import ClassVar
-from few_shot import generate_population, populate_few_shot
+from datasynth.few_shot import generate_population, populate_few_shot
 
 
 class DatasetPipeline(BaseChain):
@@ -51,7 +51,6 @@ class DatasetPipeline(BaseChain):
     ) -> dict[str, List[dict[str, Any | str]]]:
         generated: List[dict[str, Any | str]] = []
         population = generate_population(self.datatype)
-
         while len(generated) < self.k:
             few_shot = populate_few_shot(
                 population=population, sample_size=self.sample_size
@@ -60,28 +59,26 @@ class DatasetPipeline(BaseChain):
             inputs["few_shot"] = few_shot
 
             generated_content: dict[str, str] = self.generator.invoke(input=inputs)
-
             if generated_content.get("generated") is not None:
                 print("generated content:", generated_content)
                 generated.extend(generated_content["generated"])
             else:
                 print("warning: No content generated")
                 break
-
         outputs = []
         for example in generated[: self.k]:
             try:
                 normalizer_inputs: dict[str, Any] = {
                     self.normalizer.input_keys[0]: example.strip()
                 }
-
+                print("EXAMPLE INPUTS", example)
+                print("NORMALIZER INPUTS", normalizer_inputs)
                 outputs.append(
                     {
                         "generated_input": example,
                         "normalized_output": self.normalizer.invoke(normalizer_inputs),
                     }
                 )
-            
             except:
                 continue
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
@@ -91,6 +88,9 @@ class DatasetPipeline(BaseChain):
                 "normalizer_prompt": self.normalizer.template.template,
             }
         }
+
+        assert len(results["dataset"]["outputs"]) == self.k
+
         if self.manual_review:
             for pair in results["dataset"]["outputs"]:
 
@@ -132,7 +132,7 @@ auto_class(
 
 def generate_dataset(
     datatype: str,
-    k: int = 3,
+    k: int = 10,
     dataset_name: str = None,
     temperature: float = 0.8,
     cache: bool = False,
@@ -163,6 +163,7 @@ def generate_dataset(
     chain = DatasetPipeline.from_name(
         datatype, k=k, dataset_name=dataset_name, manual_review=manual_review
     )
+    
     return chain.run()
 
 
