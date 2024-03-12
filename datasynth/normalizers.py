@@ -9,15 +9,14 @@ from datasynth import TEMPLATE_DIR
 from typing import Any
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_openai import OpenAI, ChatOpenAI
-
+from models import get_model
 
 optional_params = {"stop": ["]"]}
 
 
 class NormalizerChain(BaseChain):
-
-    template: PromptTemplate = PrivateAttr()
+    model_name: str = "gpt-3.5-turbo"
+    _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type = "normalizer"
     temperature: float = 0.0
@@ -26,7 +25,7 @@ class NormalizerChain(BaseChain):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.template = PromptTemplate(
+        self._template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(
                 os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
@@ -39,11 +38,11 @@ class NormalizerChain(BaseChain):
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
         self.chain = LLMChain(
-            prompt=self.template,
-            llm=OpenAI(
+            prompt=self._template,
+            llm=get_model(
+                model_name=self.model_name,
                 temperature=self.temperature,
                 cache=self.cache,
-                # model="gpt-4",
                 model_kwargs=optional_params,
             ),
             verbose=self.verbose,
@@ -56,7 +55,6 @@ class NormalizerChain(BaseChain):
     @property
     def output_keys(self) -> list[str]:
         return ["normalized"]
-
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
         print("input >>", inputs)
@@ -79,10 +77,15 @@ def main(
     temperature: float = 0.0,
     cache: bool = False,
     verbose: bool = True,
+    model_name: str = "gpt-3.5-turbo",
 ):
 
     chain = NormalizerChain.from_name(
-        datatype, temperature=temperature, cache=cache, verbose=verbose
+        datatype,
+        temperature=temperature,
+        cache=cache,
+        verbose=verbose,
+        model_name=model_name,
     )
     inputs = {datatype: example}
     pprint(chain.invoke(inputs))

@@ -2,7 +2,6 @@ import os
 from typing import ClassVar
 from pydantic import Field, PrivateAttr
 from langchain.chains import LLMChain
-from langchain_openai import OpenAI, ChatOpenAI
 from langchain.prompts import PromptTemplate
 import typer
 from datasynth import TEMPLATE_DIR
@@ -10,12 +9,14 @@ from pprint import pprint
 from datasynth.base import BaseChain, auto_class
 from few_shot import populate_few_shot, generate_population
 from settings import SEPARATOR
+from models import get_model
 
 separator = SEPARATOR
 
 
 class GeneratorChain(BaseChain):
-    template: PromptTemplate = PrivateAttr()
+    model_name: str = "gpt-3.5-turbo"
+    _template: PromptTemplate = PrivateAttr()
     chain = Field(LLMChain, required=False)
     chain_type: ClassVar[str] = "generator"
     temperature: float = 0.0
@@ -24,7 +25,7 @@ class GeneratorChain(BaseChain):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.template = PromptTemplate(
+        self._template = PromptTemplate(
             input_variables=["few_shot"],
             template=open(
                 os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
@@ -37,8 +38,12 @@ class GeneratorChain(BaseChain):
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
         self.chain = LLMChain(
-            prompt=self.template,
-            llm=OpenAI(temperature=self.temperature, cache=self.cache),
+            prompt=self._template,
+            llm=get_model(
+                temperature=self.temperature,
+                cache=self.cache,
+                model_name=self.model_name,
+            ),
             verbose=self.verbose,
         )
 
@@ -49,7 +54,7 @@ class GeneratorChain(BaseChain):
     @property
     def output_keys(self) -> list[str]:
         return ["generated"]
-    
+
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
         print(f"inputs: {inputs}")
         generated_items = self.chain.invoke(input=inputs)["text"].split(separator)
@@ -68,11 +73,16 @@ def main(
     temperature: float = 0.5,
     cache: bool = False,
     verbose: bool = True,
+    model_name: str = "gpt-3.5-turbo",
 ):
     population = generate_population(datatype)
     few_shot = populate_few_shot(population=population, sample_size=sample_size)
     chain = GeneratorChain.from_name(
-        datatype, temperature=temperature, cache=cache, verbose=verbose
+        datatype,
+        temperature=temperature,
+        cache=cache,
+        verbose=verbose,
+        model_name=model_name,
     )
     pprint(chain.invoke(few_shot))
 
