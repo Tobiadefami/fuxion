@@ -84,11 +84,11 @@ class DatasetPipeline(BaseChain):
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": outputs,
-                "generator_prompt": self.generator.template.template,
-                "normalizer_prompt": self.normalizer.template.template,
+                "generator_prompt": self.generator._template.template,
+                "normalizer_prompt": self.normalizer._template.template,
             }
         }
-
+        import ipdb; ipdb.set_trace()
         assert len(results["dataset"]["outputs"]) == self.k
 
         if self.manual_review:
@@ -121,22 +121,23 @@ class DatasetPipeline(BaseChain):
 
 # TODO: look at overlap of generator and normalizer dirs
 template_dir = os.path.join(TEMPLATE_DIR, "generator")
-auto_class(
-    template_dir,
-    DatasetPipeline,
-    "DatasetPipeline",
-    generator_chain=GeneratorChain,
-    normalizer_chain=NormalizerChain,
-)
+# auto_class(
+#     template_dir,
+#     DatasetPipeline,
+#     "DatasetPipeline",
+#     generator_chain=GeneratorChain,
+#     normalizer_chain=NormalizerChain,
+# )
 
 
 def generate_dataset(
     datatype: str,
-    k: int = 10,
+    k: int = 5,
     dataset_name: str = None,
     temperature: float = 0.8,
     cache: bool = False,
     manual_review: bool = False,
+    model_name: str = "gpt-3.5-turbo",
 ):
     """Generate synthetic data and the normalized output
 
@@ -159,6 +160,7 @@ def generate_dataset(
         normalizer_chain=NormalizerChain,
         temperature=temperature,
         cache=cache,
+        model_name=model_name
     )
     chain = DatasetPipeline.from_name(
         datatype, k=k, dataset_name=dataset_name, manual_review=manual_review
