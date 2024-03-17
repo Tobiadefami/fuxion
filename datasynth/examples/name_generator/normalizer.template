@@ -1,0 +1,18 @@
+Format the following names as a list of python dictionaries of the form:
+[
+    { 
+        "title": str | None, # e.g. "Mr.", "Ms.", "Dr."
+        "given": str, 
+        "middle": str | None, 
+        "surname": str, 
+        "suffix": str | None # e.g. "Jr.", "III", "Sr.", "PhD", "Esq"
+    }
+]. 
+
+Be sure to handle compound surnames.
+
+Input:
+"{{name}}"
+
+Output:
+[{
