@@ -1,13 +1,14 @@
 import json
 import ast
+import re
 from pprint import pprint
 import typer
 from pydantic import Field, PrivateAttr
 from datasynth.base import BaseChain
-from typing import Any
+from typing import Any, Optional
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from models import get_model
+from datasynth.models import get_model
 
 optional_params = {"stop": ["]"]}
 
@@ -20,12 +21,19 @@ class NormalizerChain(BaseChain):
     temperature: float = 0.0
     cache: bool = True
     verbose: bool = True
+    datatype: Optional[str]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        datatype = self.template_file.split("/")[-1].split(".")[0]
+
+        with open(self.template_file) as f:
+            data = f.read()
+            pattern = r"\{\{(\w+)\}\}"
+            match = re.search(pattern, data)
+            self.datatype = match.group(1)
+
         self._template = PromptTemplate(
-            input_variables=[datatype],
+            input_variables=[self.datatype],
             template=open(self.template_file).read(),
             validate_template=True,
             template_format="jinja2",
@@ -43,6 +51,39 @@ class NormalizerChain(BaseChain):
                 model_kwargs=optional_params,
             ),
             verbose=self.verbose,
+        )
+
+    @staticmethod
+    def execute(
+        normalizer_template: str,
+        example: str,
+        temperature: float = 0.0,
+        cache: bool = False,
+        verbose: bool = True,
+        model_name: str = "gpt-3.5-turbo",
+    ):
+        chain = NormalizerChain.from_template(
+            template_file=normalizer_template,
+            temperature=temperature,
+            cache=cache,
+            verbose=verbose,
+            model_name=model_name,
+        )
+        result = chain.invoke({chain.datatype: example})
+        pprint(result)
+        
+    @classmethod
+    def from_template(
+        cls,
+        *args,
+        **kwargs,
+    ):
+        return super().from_name(
+            *args,
+            class_suffix="Normalizer",
+            base_cls=NormalizerChain,
+            chain_type="normalizer",
+            **kwargs,
         )
 
     @property
@@ -64,7 +105,6 @@ class NormalizerChain(BaseChain):
 
 
 def main(
-    # datatype: str,
     normalizer_template: str,
     example: str,
     temperature: float = 0.0,
@@ -73,17 +113,14 @@ def main(
     model_name: str = "gpt-3.5-turbo",
 ):
 
-    chain = NormalizerChain.from_name(
+    chain = NormalizerChain.from_template(
         normalizer_template,
         temperature=temperature,
-        class_suffix="Normalizer",
-        base_cls=NormalizerChain,
         cache=cache,
         verbose=verbose,
         model_name=model_name,
     )
-    datatype = normalizer_template.split("/")[-1].split(".")[0]
-    pprint(chain.invoke({datatype: example}))
+    pprint(chain.invoke({chain.datatype:example}))
 
 
 if __name__ == "__main__":

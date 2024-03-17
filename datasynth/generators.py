@@ -42,6 +42,42 @@ class GeneratorChain(BaseChain):
             ),
             verbose=self.verbose,
         )
+        
+    @staticmethod
+    def execute(
+        generator_template: str,
+        few_shot_example_file: str,
+        sample_size: int = 3,
+        temperature: float = 0.5,
+        cache: bool = False,
+        verbose: bool = True,
+        model_name: str = "gpt-3.5-turbo",
+    ):
+        population = generate_population(few_shot_example_file=few_shot_example_file)
+        few_shot = populate_few_shot(population=population, sample_size=sample_size)
+        chain = GeneratorChain.from_template(
+            template_file=generator_template,
+            temperature=temperature,
+            cache=cache,
+            verbose=verbose,
+            model_name=model_name,
+        )
+        result = chain.invoke({"few_shot": few_shot})
+        pprint(result)
+
+    @classmethod
+    def from_template(
+        cls,
+        *args,
+        **kwargs,
+    ):
+        return super().from_name(
+            *args,
+            class_suffix="Generator",
+            base_cls=GeneratorChain,
+            chain_type="generator",
+            **kwargs,
+        )
 
     @property
     def input_keys(self) -> list[str]:
@@ -57,8 +93,6 @@ class GeneratorChain(BaseChain):
         return {"generated": filtered_items}
 
 
-
-
 def main(
     generator_template: str,
     few_shot_example_file: str,
@@ -70,11 +104,8 @@ def main(
 ):
     population = generate_population(few_shot_example_file=few_shot_example_file)
     few_shot = populate_few_shot(population=population, sample_size=sample_size)
-    chain = GeneratorChain.from_name(
+    chain = GeneratorChain.from_template(
         generator_template,
-        class_suffix="Generator",
-        base_cls=GeneratorChain,
-        chain_type="generator",
         temperature=temperature,
         cache=cache,
         verbose=verbose,

@@ -31,6 +31,66 @@ class DatasetPipeline(BaseChain):
     def output_keys(self) -> List[str]:
         return ["dataset"]
 
+    @classmethod
+    def from_template(
+        cls,
+        *args,
+        **kwargs,
+    ):
+        return super()._from_name(
+            *args,
+            generator_chain=GeneratorChain,
+            normalizer_chain=NormalizerChain,
+            class_suffix="DatasetPipeline",
+            base_cls=DatasetPipeline,
+            **kwargs,
+        )
+        
+    @staticmethod
+    def execute(
+        generator_file: str,
+        normalizer_file: str,
+        few_shot_example_file: str,
+        k: int = 5,
+        dataset_name: Optional[str] = None,
+        temperature: float = 0.8,
+        cache: bool = False,
+        manual_review: bool = False,
+        model_name: str = "gpt-3.5-turbo",
+    ) -> dict[str, List[dict[str, Any | str]]]:
+        """
+        Static method to generate a dataset using the DatasetPipeline. This
+        method initializes the pipeline with given templates and parameters,
+        then invokes the pipeline to generate and normalize a dataset.
+
+        Args:
+            generator_file: Path to the generator template file.
+            normalizer_file: Path to the normalizer template file.
+            example_file: Path to the few-shot example file.
+            k: Number of samples to generate.
+            dataset_name: Custom name for the dataset file.
+            temperature: Model temperature for generation.
+            cache: Whether to cache model calls.
+            manual_review: Whether to enable manual review of generated data.
+            model_name: Name of the model to use.
+
+        Returns:
+            A dictionary containing the generated and normalized dataset.
+        """
+        chain = DatasetPipeline.from_template(
+            generator_template=generator_file,
+            normalizer_template=normalizer_file,
+            few_shot_file=few_shot_example_file,
+            k=k,
+            temperature=temperature,
+            cache=cache,
+            model_name=model_name,
+            dataset_name=dataset_name,
+            manual_review=manual_review,
+        )
+
+        return chain.run()
+
     def run(
         self, inputs: dict[str, str] | None = None
     ) -> dict[str, List[dict[str, Any | str]]]:
@@ -55,28 +115,36 @@ class DatasetPipeline(BaseChain):
     ) -> dict[str, List[dict[str, Any | str]]]:
 
         population = generate_population(few_shot_example_file=self.few_shot_file)
+
         outputs: list[dict[str, Any]] = []
 
         while len(outputs) < self.k:
             few_shot = populate_few_shot(
                 population=population, sample_size=self.sample_size
             )
+
             inputs = inputs or {}
             inputs["few_shot"] = few_shot
-
             generated_content: dict[str, str] = self.generator.invoke(input=inputs)
-            try:
-                normalizer_inputs: dict[str, Any] = {
-                    self.normalizer.input_keys[0]: generated_content["generated"]
-                }
-                outputs.append(
-                    {
-                        "generated_input": generated_content["generated"],
-                        "normalized_output": self.normalizer.invoke(normalizer_inputs),
+
+            for example in generated_content["generated"]:
+
+                try:
+                    normalizer_inputs: dict[str, Any] = {
+                        self.normalizer.input_keys[0]: example
                     }
-                )
-            except:
-                continue
+                    outputs.append(
+                        {
+                            "generated_input": example,
+                            "normalized_output": self.normalizer.invoke(
+                                normalizer_inputs
+                            ),
+                        }
+                    )
+                    if len(outputs) >= self.k:
+                        break
+                except:
+                    continue
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": outputs,
@@ -137,14 +205,10 @@ def generate_dataset(
         dict[str, dict[str, list[dict[str, Any | str]] | str]] : A dictionary of synthetically generated and normalized data
     """
 
-    chain = DatasetPipeline._from_name(
+    chain = DatasetPipeline.from_template(
         generator_template=generator_file,
         normalizer_template=normalizer_file,
-        generator_chain=GeneratorChain,
-        normalizer_chain=NormalizerChain,
-        few_shot_file = example_file,
-        class_suffix="DatasetPipeline",
-        base_cls=DatasetPipeline,
+        few_shot_file=example_file,
         k=k,
         temperature=temperature,
         cache=cache,

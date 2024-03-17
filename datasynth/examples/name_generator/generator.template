@@ -1,0 +1,17 @@
+Generate a list of names separated by double newlines. 
+
+Make them as realistic and diverse as possible.
+
+Include following types of variety:
+- middle names
+- "Last, First" format
+- married couples
+- names of non U.S. origin
+- compound surnames
+- titles (e.g. Dr, Mr)
+- suffixes (e.g. Jr, Sr, Esq)
+
+{{few_shot}}
+Do not reuse the examples above.
+
+List:

@@ -2,7 +2,7 @@ import random
 import os
 import json
 from typing import Union
-from settings import SEPARATOR
+from datasynth.settings import SEPARATOR
 
 separator = SEPARATOR
 

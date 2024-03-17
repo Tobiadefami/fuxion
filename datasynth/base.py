@@ -83,16 +83,16 @@ class BaseChain(Chain):
                     "normalizer_template": normalizer_template,
                     "generator": generator_chain.from_name(
                         generator_template,
-                        class_suffix="generator",
-                        base_cls=generator_chain,
                         *args,
+                        base_cls=generator_chain,
+                        class_suffix="Generator",
                         **kwargs
                     ),
                     "normalizer": normalizer_chain.from_name(
                         normalizer_template,
-                        class_suffix="normalizer",
-                        base_cls=normalizer_chain,
                         *args,
+                        base_cls=normalizer_chain,
+                        class_suffix="Normalizer",
                         **kwargs
                     ),
                 },
