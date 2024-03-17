@@ -36,10 +36,7 @@ class BaseChain(Chain):
     ) -> Chain:
 
         template_name = template_file.split("/")[-1].split(".")[0]
-        # # import ipdb; ipdb.set_trace()
-        # if class_suffix == "DatasetPipeline":
-
-        # else:
+       
         generated_type: type = type(
             template_name.capitalize() + class_suffix,
             (base_cls,),

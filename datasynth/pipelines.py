@@ -8,7 +8,6 @@ from datasynth.base import BaseChain
 from typing import ClassVar
 from datasynth.few_shot import generate_population, populate_few_shot
 import os
-from datasynth import EXAMPLE_DIR
 from datasynth.generators import GeneratorChain
 from datasynth.normalizers import NormalizerChain
 
@@ -16,10 +15,8 @@ from datasynth.normalizers import NormalizerChain
 class DatasetPipeline(BaseChain):
 
     k: int = 10
-    few_shot_file: Optional[str]
+    few_shot_file: str
     sample_size: int = 3
-    generator_template = ClassVar[str]
-    normalizer_template = ClassVar[str]
     dataset_name: Optional[str] = None
     manual_review: bool = False
     generator: ClassVar[GeneratorChain]
@@ -57,11 +54,6 @@ class DatasetPipeline(BaseChain):
         inputs: Optional[dict[str, str] | None] = None,
     ) -> dict[str, List[dict[str, Any | str]]]:
 
-        # datatype = self.template_file.split("/")[-1].split(".")[0]
-        # few_shot_example_file = os.path.join(EXAMPLE_DIR, f"{datatype}.json")
-        # import ipdb
-
-        # ipdb.set_trace()
         population = generate_population(few_shot_example_file=self.few_shot_file)
         outputs: list[dict[str, Any]] = []
 
