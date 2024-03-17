@@ -1,15 +1,13 @@
-import os
 from typing import ClassVar
 from pydantic import Field, PrivateAttr
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 import typer
-from datasynth import TEMPLATE_DIR
 from pprint import pprint
-from datasynth.base import BaseChain, auto_class
-from few_shot import populate_few_shot, generate_population
-from settings import SEPARATOR
-from models import get_model
+from datasynth.base import BaseChain
+from datasynth.few_shot import populate_few_shot, generate_population
+from datasynth.settings import SEPARATOR
+from datasynth.models import get_model
 
 separator = SEPARATOR
 
@@ -27,9 +25,7 @@ class GeneratorChain(BaseChain):
         super().__init__(*args, **kwargs)
         self._template = PromptTemplate(
             input_variables=["few_shot"],
-            template=open(
-                os.path.join(TEMPLATE_DIR, "generator", f"{self.datatype}.template")
-            ).read(),
+            template=open(self.template_file).read(),
             validate_template=False,
             template_format="jinja2",
         )
@@ -56,29 +52,29 @@ class GeneratorChain(BaseChain):
         return ["generated"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
-        print(f"inputs: {inputs}")
         generated_items = self.chain.invoke(input=inputs)["text"].split(separator)
-        print(f"generated_items: {generated_items}")
         filtered_items = [item for item in generated_items if item.strip()]
         return {"generated": filtered_items}
 
 
-template_dir = os.path.join(TEMPLATE_DIR, "generator")
-auto_class(template_dir, GeneratorChain, "Generator")
 
 
 def main(
-    datatype: str,
+    generator_template: str,
+    few_shot_example_file: str,
     sample_size: int = 3,
     temperature: float = 0.5,
     cache: bool = False,
     verbose: bool = True,
     model_name: str = "gpt-3.5-turbo",
 ):
-    population = generate_population(datatype)
+    population = generate_population(few_shot_example_file=few_shot_example_file)
     few_shot = populate_few_shot(population=population, sample_size=sample_size)
     chain = GeneratorChain.from_name(
-        datatype,
+        generator_template,
+        class_suffix="Generator",
+        base_cls=GeneratorChain,
+        chain_type="generator",
         temperature=temperature,
         cache=cache,
         verbose=verbose,

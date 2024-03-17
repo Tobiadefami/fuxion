@@ -1,18 +1,25 @@
 import typer
 import time
-from typing import Optional
+from typing import Optional, Any
 from datasynth.generators import *
 from datasynth.normalizers import *
 from typing import Any, List, ClassVar, Optional
 from datasynth.base import BaseChain
 from typing import ClassVar
 from datasynth.few_shot import generate_population, populate_few_shot
+import os
+from datasynth import EXAMPLE_DIR
+from datasynth.generators import GeneratorChain
+from datasynth.normalizers import NormalizerChain
 
 
 class DatasetPipeline(BaseChain):
 
     k: int = 10
+    few_shot_file: Optional[str]
     sample_size: int = 3
+    generator_template = ClassVar[str]
+    normalizer_template = ClassVar[str]
     dataset_name: Optional[str] = None
     manual_review: bool = False
     generator: ClassVar[GeneratorChain]
@@ -49,9 +56,16 @@ class DatasetPipeline(BaseChain):
         self,
         inputs: Optional[dict[str, str] | None] = None,
     ) -> dict[str, List[dict[str, Any | str]]]:
-        generated: List[dict[str, Any | str]] = []
-        population = generate_population(self.datatype)
-        while len(generated) < self.k:
+
+        # datatype = self.template_file.split("/")[-1].split(".")[0]
+        # few_shot_example_file = os.path.join(EXAMPLE_DIR, f"{datatype}.json")
+        # import ipdb
+
+        # ipdb.set_trace()
+        population = generate_population(few_shot_example_file=self.few_shot_file)
+        outputs: list[dict[str, Any]] = []
+
+        while len(outputs) < self.k:
             few_shot = populate_few_shot(
                 population=population, sample_size=self.sample_size
             )
@@ -59,23 +73,13 @@ class DatasetPipeline(BaseChain):
             inputs["few_shot"] = few_shot
 
             generated_content: dict[str, str] = self.generator.invoke(input=inputs)
-            if generated_content.get("generated") is not None:
-                print("generated content:", generated_content)
-                generated.extend(generated_content["generated"])
-            else:
-                print("warning: No content generated")
-                break
-        outputs = []
-        for example in generated[: self.k]:
             try:
                 normalizer_inputs: dict[str, Any] = {
-                    self.normalizer.input_keys[0]: example.strip()
+                    self.normalizer.input_keys[0]: generated_content["generated"]
                 }
-                print("EXAMPLE INPUTS", example)
-                print("NORMALIZER INPUTS", normalizer_inputs)
                 outputs.append(
                     {
-                        "generated_input": example,
+                        "generated_input": generated_content["generated"],
                         "normalized_output": self.normalizer.invoke(normalizer_inputs),
                     }
                 )
@@ -88,8 +92,6 @@ class DatasetPipeline(BaseChain):
                 "normalizer_prompt": self.normalizer._template.template,
             }
         }
-        import ipdb; ipdb.set_trace()
-        assert len(results["dataset"]["outputs"]) == self.k
 
         if self.manual_review:
             for pair in results["dataset"]["outputs"]:
@@ -119,21 +121,12 @@ class DatasetPipeline(BaseChain):
         return results
 
 
-# TODO: look at overlap of generator and normalizer dirs
-template_dir = os.path.join(TEMPLATE_DIR, "generator")
-# auto_class(
-#     template_dir,
-#     DatasetPipeline,
-#     "DatasetPipeline",
-#     generator_chain=GeneratorChain,
-#     normalizer_chain=NormalizerChain,
-# )
-
-
 def generate_dataset(
-    datatype: str,
+    generator_file: str,
+    normalizer_file: str,
+    example_file: str,
     k: int = 5,
-    dataset_name: str = None,
+    dataset_name: str | None = None,
     temperature: float = 0.8,
     cache: bool = False,
     manual_review: bool = False,
@@ -152,20 +145,22 @@ def generate_dataset(
         dict[str, dict[str, list[dict[str, Any | str]] | str]] : A dictionary of synthetically generated and normalized data
     """
 
-    auto_class(
-        template_dir,
-        DatasetPipeline,
-        "DatasetPipeline",
+    chain = DatasetPipeline._from_name(
+        generator_template=generator_file,
+        normalizer_template=normalizer_file,
         generator_chain=GeneratorChain,
         normalizer_chain=NormalizerChain,
+        few_shot_file = example_file,
+        class_suffix="DatasetPipeline",
+        base_cls=DatasetPipeline,
+        k=k,
         temperature=temperature,
         cache=cache,
-        model_name=model_name
+        model_name=model_name,
+        dataset_name=dataset_name,
+        manual_review=manual_review,
     )
-    chain = DatasetPipeline.from_name(
-        datatype, k=k, dataset_name=dataset_name, manual_review=manual_review
-    )
-    
+
     return chain.run()
 
 

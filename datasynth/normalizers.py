@@ -1,11 +1,9 @@
 import json
 import ast
 from pprint import pprint
-import os
 import typer
 from pydantic import Field, PrivateAttr
-from datasynth.base import BaseChain, auto_class
-from datasynth import TEMPLATE_DIR
+from datasynth.base import BaseChain
 from typing import Any
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -25,11 +23,10 @@ class NormalizerChain(BaseChain):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        datatype = self.template_file.split("/")[-1].split(".")[0]
         self._template = PromptTemplate(
-            input_variables=[self.datatype],
-            template=open(
-                os.path.join(TEMPLATE_DIR, "normalizer", f"{self.datatype}.template")
-            ).read(),
+            input_variables=[datatype],
+            template=open(self.template_file).read(),
             validate_template=True,
             template_format="jinja2",
         )
@@ -57,9 +54,8 @@ class NormalizerChain(BaseChain):
         return ["normalized"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
-        print("input >>", inputs)
         output = "[{" + self.chain.invoke(inputs)["text"] + "]"
-        print("OUTPUTS >>", output)
+
         try:
             return {"normalized": ast.literal_eval(output)}
         except json.JSONDecodeError:
@@ -67,12 +63,9 @@ class NormalizerChain(BaseChain):
             return {"normalized": []}
 
 
-template_dir = os.path.join(TEMPLATE_DIR, "normalizer")
-auto_class(template_dir, NormalizerChain, "Normalizer")
-
-
 def main(
-    datatype: str,
+    # datatype: str,
+    normalizer_template: str,
     example: str,
     temperature: float = 0.0,
     cache: bool = False,
@@ -81,14 +74,16 @@ def main(
 ):
 
     chain = NormalizerChain.from_name(
-        datatype,
+        normalizer_template,
         temperature=temperature,
+        class_suffix="Normalizer",
+        base_cls=NormalizerChain,
         cache=cache,
         verbose=verbose,
         model_name=model_name,
     )
-    inputs = {datatype: example}
-    pprint(chain.invoke(inputs))
+    datatype = normalizer_template.split("/")[-1].split(".")[0]
+    pprint(chain.invoke({datatype: example}))
 
 
 if __name__ == "__main__":
