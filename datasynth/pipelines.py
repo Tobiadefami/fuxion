@@ -17,6 +17,8 @@ class DatasetPipeline(BaseChain):
     k: int = 10
     few_shot_file: str
     sample_size: int = 3
+    batch_save: bool = False
+    batch_size: int = 100
     dataset_name: Optional[str] = None
     manual_review: bool = False
     generator: ClassVar[GeneratorChain]
@@ -45,51 +47,12 @@ class DatasetPipeline(BaseChain):
             base_cls=DatasetPipeline,
             **kwargs,
         )
-        
-    @staticmethod
+
     def execute(
-        generator_file: str,
-        normalizer_file: str,
-        few_shot_example_file: str,
-        k: int = 5,
-        dataset_name: Optional[str] = None,
-        temperature: float = 0.8,
-        cache: bool = False,
-        manual_review: bool = False,
-        model_name: str = "gpt-3.5-turbo",
+        self,
     ) -> dict[str, List[dict[str, Any | str]]]:
-        """
-        Static method to generate a dataset using the DatasetPipeline. This
-        method initializes the pipeline with given templates and parameters,
-        then invokes the pipeline to generate and normalize a dataset.
 
-        Args:
-            generator_file: Path to the generator template file.
-            normalizer_file: Path to the normalizer template file.
-            example_file: Path to the few-shot example file.
-            k: Number of samples to generate.
-            dataset_name: Custom name for the dataset file.
-            temperature: Model temperature for generation.
-            cache: Whether to cache model calls.
-            manual_review: Whether to enable manual review of generated data.
-            model_name: Name of the model to use.
-
-        Returns:
-            A dictionary containing the generated and normalized dataset.
-        """
-        chain = DatasetPipeline.from_template(
-            generator_template=generator_file,
-            normalizer_template=normalizer_file,
-            few_shot_file=few_shot_example_file,
-            k=k,
-            temperature=temperature,
-            cache=cache,
-            model_name=model_name,
-            dataset_name=dataset_name,
-            manual_review=manual_review,
-        )
-
-        return chain.run()
+        return self.run()
 
     def run(
         self, inputs: dict[str, str] | None = None
@@ -109,6 +72,62 @@ class DatasetPipeline(BaseChain):
 
         return self._call(inputs)
 
+    def save_batch(self, batch):
+        """Save a batch of outputs to a file."""
+
+        if self.dataset_name is None:
+            self.dataset_name = f"{str(int(time.time()))}"
+
+        # dataset_dir: str = os.path.join(os.path.dirname(__file__), "datasets")
+        # if not os.path.exists(dataset_dir):
+        #     os.makedirs(dataset_dir, exist_ok=True)
+
+        # dataset_path: str = f"{dataset_dir}/{self.dataset_name}"
+        # with open(dataset_path, "w") as fd:
+        #     json.dump(results, fd)
+
+        batch_name = f"{self.dataset_name}.json"
+        batch_dir = os.path.join(os.path.dirname(__file__), "datasets")
+        if not os.path.exists(batch_dir):
+            os.makedirs(batch_dir, exist_ok=True)
+
+        batch_path = os.path.join(batch_dir, batch_name)
+
+        with open(batch_path, "w") as fd:
+            json.dump(batch, fd)
+
+    def save_dataset(self, results):
+        """Save the complete dataset to a file."""
+        if self.dataset_name is None:
+            self.dataset_name = f"{str(int(time.time()))}.json"
+        else:
+            self.dataset_name = f"{self.dataset_name}.json"
+
+        dataset_dir = os.path.join(os.path.dirname(__file__), "datasets")
+
+        if not os.path.exists(dataset_dir):
+            os.makedirs(dataset_dir, exist_ok=True)
+
+        dataset_path = os.path.join(dataset_dir, self.dataset_name)
+
+        with open(dataset_path, "w") as fd:
+            json.dump(results, fd)
+
+    # TODO: implement load from checkpoint based on saved batch dataset
+
+    def load_from_checkpoint(self):
+        if self.dataset_name is None:
+            self.dataset_name = f"{str(int(time.time()))}"
+        checkpoint_dir = os.path.join(os.path.dirname(__file__), "datasets")
+        checkpoint_path = os.path.join(checkpoint_dir, self.dataset_name)
+
+        if os.path.exists(checkpoint_path):
+            with open(checkpoint, "r") as fd:
+                existing_dataset = json.load(fd)
+                existing_outputs = existing_dataset["dataset"]["outputs"]
+                return existing_outputs
+        return []
+
     def _call(
         self,
         inputs: Optional[dict[str, str] | None] = None,
@@ -116,7 +135,8 @@ class DatasetPipeline(BaseChain):
 
         population = generate_population(few_shot_example_file=self.few_shot_file)
 
-        outputs: list[dict[str, Any]] = []
+        batch_outputs = []
+        outputs: list[dict[str, Any]] = self.load_from_checkpoint()
 
         while len(outputs) < self.k:
             few_shot = populate_few_shot(
@@ -141,10 +161,21 @@ class DatasetPipeline(BaseChain):
                             ),
                         }
                     )
+
                     if len(outputs) >= self.k:
                         break
+
                 except:
                     continue
+
+                if len(outputs) >= self.k or len(outputs) >= self.batch_size:
+                    batch = outputs[: self.batch_size]
+                    batch_outputs.extend(batch)
+                    outputs = outputs[self.batch_size :]
+
+                    if self.batch_save:
+                        self.save_batch(batch_outputs)
+
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
                 "outputs": outputs,
@@ -165,20 +196,10 @@ class DatasetPipeline(BaseChain):
                 else:
                     pair["manual_review"] = "rejected"
 
-        if self.dataset_name is None:
-            self.dataset_name = f"{str(int(time.time()))}.json"
-        else:
-            self.dataset_name = f"{self.dataset_name}.json"
+        if not self.batch_save:
+            self.save_dataset(results)
 
-        dataset_dir: str = os.path.join(os.path.dirname(__file__), "datasets")
-        if not os.path.exists(dataset_dir):
-            os.makedirs(dataset_dir, exist_ok=True)
-
-        dataset_path: str = f"{dataset_dir}/{self.dataset_name}"
-        with open(dataset_path, "w") as fd:
-            json.dump(results, fd)
-
-        return results
+        return results["dataset"]
 
 
 def generate_dataset(
@@ -191,6 +212,8 @@ def generate_dataset(
     cache: bool = False,
     manual_review: bool = False,
     model_name: str = "gpt-3.5-turbo",
+    batch_save: bool = False,
+    batch_size: int = 10,
 ):
     """Generate synthetic data and the normalized output
 
@@ -213,6 +236,8 @@ def generate_dataset(
         temperature=temperature,
         cache=cache,
         model_name=model_name,
+        batch_save=batch_save,
+        batch_size=batch_size,
         dataset_name=dataset_name,
         manual_review=manual_review,
     )
