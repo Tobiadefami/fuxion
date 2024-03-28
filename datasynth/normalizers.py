@@ -53,25 +53,15 @@ class NormalizerChain(BaseChain):
             verbose=self.verbose,
         )
 
-    @staticmethod
     def execute(
-        normalizer_template: str,
+        self,
         example: str,
-        temperature: float = 0.0,
-        cache: bool = False,
-        verbose: bool = True,
-        model_name: str = "gpt-3.5-turbo",
     ):
-        chain = NormalizerChain.from_template(
-            template_file=normalizer_template,
-            temperature=temperature,
-            cache=cache,
-            verbose=verbose,
-            model_name=model_name,
-        )
-        result = chain.invoke({chain.datatype: example})
-        pprint(result)
-        
+
+        inputs = {self.datatype: example}
+        result = self.chain.invoke(inputs)
+        return result
+
     @classmethod
     def from_template(
         cls,
@@ -120,7 +110,7 @@ def main(
         verbose=verbose,
         model_name=model_name,
     )
-    pprint(chain.invoke({chain.datatype:example}))
+    pprint(chain.invoke({chain.datatype: example}))
 
 
 if __name__ == "__main__":

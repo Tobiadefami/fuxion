@@ -1,13 +1,16 @@
 from datasynth.generators import GeneratorChain
+from pprint import pprint
 
-generator = GeneratorChain.execute(
-    generator_template="examples/name_generator/generator.template",
-    few_shot_example_file="examples/name_generator/few_shot.json",
-    sample_size=3,
-    temperature=0.5,
-    cache=False,
+chain = GeneratorChain.from_template(
+    template_file="examples/name_generator/generator.template",
+    temperature=0.0,
+    cache=True,
     verbose=True,
-    model_name='gpt-3.5-turbo',
+    model_name="gpt-3.5-turbo",
 )
 
-print(generator)
+
+result = chain.execute(
+    few_shot_example_file="examples/name_generator/few_shot.json", sample_size=3
+)
+pprint(result)
