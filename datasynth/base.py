@@ -1,13 +1,10 @@
 from typing import ClassVar
 from langchain.chains.base import Chain
 from typing import Any, Type
-import os
-import langchain
 from langchain.cache import SQLiteCache
+import langchain
 
-
-langchain.llm_cache = SQLiteCache()
-
+langchain.llm_cache = SQLiteCache(database_path=".langchain.db")
 
 class BaseChain(Chain):
     template_file: ClassVar[str]
