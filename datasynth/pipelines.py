@@ -1,5 +1,6 @@
 import typer
 import time
+import glob
 from typing import Optional, Any
 from datasynth.generators import *
 from datasynth.normalizers import *
@@ -72,31 +73,31 @@ class DatasetPipeline(BaseChain):
 
         return self._call(inputs)
 
-    def save_batch(self, batch):
-        """Save a batch of outputs to a file."""
+    def save_batch(self, batch: list[dict[str, Any]], batch_index: int):
+        """Save a batch of outputs to a file, with each batch saved in a separate file."""
 
         if self.dataset_name is None:
-            self.dataset_name = f"{str(int(time.time()))}"
+            self.dataset_name = str(int(time.time()))
 
-        # dataset_dir: str = os.path.join(os.path.dirname(__file__), "datasets")
-        # if not os.path.exists(dataset_dir):
-        #     os.makedirs(dataset_dir, exist_ok=True)
-
-        # dataset_path: str = f"{dataset_dir}/{self.dataset_name}"
-        # with open(dataset_path, "w") as fd:
-        #     json.dump(results, fd)
-
-        batch_name = f"{self.dataset_name}.json"
+        batch_name = f"{self.dataset_name}_batch_{batch_index}.json"
         batch_dir = os.path.join(os.path.dirname(__file__), "datasets")
         if not os.path.exists(batch_dir):
             os.makedirs(batch_dir, exist_ok=True)
 
         batch_path = os.path.join(batch_dir, batch_name)
-
+        batch_outputs: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
+            "dataset": {
+                "outputs": batch,
+                "generator_prompt": self.generator._template.template,
+                "normalizer_prompt": self.normalizer._template.template,
+            }
+        }
         with open(batch_path, "w") as fd:
-            json.dump(batch, fd)
+            json.dump(batch_outputs, fd)
 
-    def save_dataset(self, results):
+    def save_full_dataset(
+        self, results: dict[str, dict[str, list[dict[str, Any | str]] | str]]
+    ) -> None:
         """Save the complete dataset to a file."""
         if self.dataset_name is None:
             self.dataset_name = f"{str(int(time.time()))}.json"
@@ -113,20 +114,37 @@ class DatasetPipeline(BaseChain):
         with open(dataset_path, "w") as fd:
             json.dump(results, fd)
 
-    # TODO: implement load from checkpoint based on saved batch dataset
+    def load_from_checkpoint(self) -> tuple[list[dict[str, Any | str]], int]:
 
-    def load_from_checkpoint(self):
         if self.dataset_name is None:
-            self.dataset_name = f"{str(int(time.time()))}"
-        checkpoint_dir = os.path.join(os.path.dirname(__file__), "datasets")
-        checkpoint_path = os.path.join(checkpoint_dir, self.dataset_name)
+            self.dataset_name = str(int(time.time()))
 
-        if os.path.exists(checkpoint_path):
-            with open(checkpoint, "r") as fd:
-                existing_dataset = json.load(fd)
-                existing_outputs = existing_dataset["dataset"]["outputs"]
-                return existing_outputs
-        return []
+        checkpoint_dir = os.path.join(os.path.dirname(__file__), "datasets")
+        pattern = os.path.join(checkpoint_dir, f"{self.dataset_name}_batch_*.json")
+        import ipdb; ipdb.set_trace()
+        batch_files = sorted(
+            glob.glob(pattern), key=lambda x: int(x.split("_")[-1].split(".")[0])
+        )
+
+        if not os.path.exists(os.path.join(checkpoint_dir, self.dataset_name)):
+            return [], 0
+
+        existing_outputs: list[dict[str, Any]] = []
+        for batch_file in batch_files:
+            with open(batch_file, "r") as fd:
+                batch_data: list[dict[str, Any]] = json.load(fd)
+                existing_outputs.extend(batch_data)
+
+        # If there are batch files, set the next batch index to one higher than the last found batch index.
+        if batch_files:
+            last_batch_index = int(
+                batch_files[-1].split("_")[-1].split(".")[0]
+            )  # Assumes naming: datasetName_batch_N.json
+            batch_index = last_batch_index + 1
+        else:
+            batch_index = 0
+
+        return existing_outputs, batch_index
 
     def _call(
         self,
@@ -135,8 +153,8 @@ class DatasetPipeline(BaseChain):
 
         population = generate_population(few_shot_example_file=self.few_shot_file)
 
-        batch_outputs = []
-        outputs: list[dict[str, Any]] = self.load_from_checkpoint()
+        batch_outputs: list[dict[str, Any]] = []
+        outputs, batch_idx = self.load_from_checkpoint()
 
         while len(outputs) < self.k:
             few_shot = populate_few_shot(
@@ -150,31 +168,38 @@ class DatasetPipeline(BaseChain):
             for example in generated_content["generated"]:
 
                 try:
+
                     normalizer_inputs: dict[str, Any] = {
                         self.normalizer.input_keys[0]: example
                     }
-                    outputs.append(
-                        {
-                            "generated_input": example,
-                            "normalized_output": self.normalizer.invoke(
-                                normalizer_inputs
-                            ),
-                        }
-                    )
+                    normalized_output = self.normalizer.invoke(normalizer_inputs)
+                    output = {
+                        "generated_input": example,
+                        "normalized_output": normalized_output,
+                    }
+                    outputs.append(output)
+
+                    if self.batch_save:
+                        # Append the current output to the batch_outputs list
+                        batch_outputs.append(output)
+                        if len(batch_outputs) >= self.batch_size:
+                            # Save the current batch to a file
+                            self.save_batch(batch_outputs, batch_idx)
+                            # Reset the batch_outputs list
+                            batch_outputs = []
+                            # Increment the batch index for the next batch
+                            batch_idx += 1
 
                     if len(outputs) >= self.k:
                         break
 
-                except:
+                except Exception as e:
+                    print(e)
                     continue
 
-                if len(outputs) >= self.k or len(outputs) >= self.batch_size:
-                    batch = outputs[: self.batch_size]
-                    batch_outputs.extend(batch)
-                    outputs = outputs[self.batch_size :]
-
-                    if self.batch_save:
-                        self.save_batch(batch_outputs)
+        # save any reminaing items to last batch
+        if batch_outputs and self.batch_save:
+            self.save_batch(batch_outputs, batch_idx)
 
         results: dict[str, dict[str, list[dict[str, Any | str]] | str]] = {
             "dataset": {
@@ -197,7 +222,7 @@ class DatasetPipeline(BaseChain):
                     pair["manual_review"] = "rejected"
 
         if not self.batch_save:
-            self.save_dataset(results)
+            self.save_full_dataset(results)
 
         return results["dataset"]
 
