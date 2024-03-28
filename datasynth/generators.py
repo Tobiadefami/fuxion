@@ -42,28 +42,16 @@ class GeneratorChain(BaseChain):
             ),
             verbose=self.verbose,
         )
-        
-    @staticmethod
+
     def execute(
-        generator_template: str,
+        self,
         few_shot_example_file: str,
         sample_size: int = 3,
-        temperature: float = 0.5,
-        cache: bool = False,
-        verbose: bool = True,
-        model_name: str = "gpt-3.5-turbo",
     ):
         population = generate_population(few_shot_example_file=few_shot_example_file)
         few_shot = populate_few_shot(population=population, sample_size=sample_size)
-        chain = GeneratorChain.from_template(
-            template_file=generator_template,
-            temperature=temperature,
-            cache=cache,
-            verbose=verbose,
-            model_name=model_name,
-        )
-        result = chain.invoke({"few_shot": few_shot})
-        pprint(result)
+        result = self.chain.invoke({"few_shot": few_shot})
+        return result
 
     @classmethod
     def from_template(
