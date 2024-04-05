@@ -1,9 +1,9 @@
-# Datasynth
+# fuxion
 LangChain + LLM powered data generation and normalization functions. 
-Datasynth helps you generate a fully synthetic dataset with LLM APIs to train a task-specific model you can run on your own GPU.
+fuxion helps you generate a fully synthetic dataset with LLM APIs to train a task-specific model you can run on your own GPU.
 Preliminary models for name, price, and address standardization are available on [HuggingFace](https://huggingface.co/PragmaticMachineLearning).
 
-![datasynth](/assets/datasynth.png)
+![fuxion](/assets/fuxion.png)
 # Table of Contents
 * [Description](#description)
 * [Installation](#installation)
@@ -13,7 +13,7 @@ Preliminary models for name, price, and address standardization are available on
   * [Pipelines](#pipelines)
 
 # Description
-Datasynth is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using Datasynth, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the right prompt to the chain and watch how things unfold :sunglasses:
+fuxion is a Python package that provides you with a data generation and normalization pipeline which could be used for testing, normalization and training machine learning models. Using fuxion, you are able to generate sythetic data for different types of use cases -- all that's required is that you pass the right prompt to the chain and watch how things unfold :sunglasses:
 
 # Installation
 
@@ -21,7 +21,7 @@ We recommend that you create a virtual environment before proceeding with the in
 
 - Clone the repository
   ```bash
-  git clone git@github.com:Tobiadefami/datasynth.git
+  git clone git@github.com:Tobiadefami/fuxion.git
   ```
 - Install poetry: 
   ```bash
@@ -46,7 +46,7 @@ By default, we provide three different templates ```[name, address, price]``` wh
 
 ## Generation
 
-Datasynth can be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do. Below is an example of what the `address.template` file looks like
+fuxion can be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do. Below is an example of what the `address.template` file looks like
 
 ```
 Generate a list of U.S. postal addresses separated by double newlines.  
@@ -70,11 +70,11 @@ List:
 
 With that established, we show how to run the generator script from the terminal 
 
-![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/generator.gif)
+![](https://github.com/Tobiadefami/fuxion/blob/main/terminal_gifs/generator.gif)
 
 ## Normalization 
 
-It's often necessary to transform data into a standardized form before storing in a database. Using Datasynth, you can make unstructured data useful by breaking it up into it's component parts and normalizing into a more structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
+It's often necessary to transform data into a standardized form before storing in a database. Using fuxion, you can make unstructured data useful by breaking it up into it's component parts and normalizing into a more structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
 
 ``` 
 Format the following address as a list of python dictionaries of the form:
@@ -108,7 +108,7 @@ Output:
 
 You can run the normalizer by passing it the datatype (name of data to be generated), and an "example"
 
-![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/normalizer.gif)
+![](https://github.com/Tobiadefami/fuxion/blob/main/terminal_gifs/normalizer.gif)
 
 ## Pipelines
 We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
@@ -133,8 +133,8 @@ Running:
 ```bash
 python pipelines.py address --k 20 --dataset-name sample-address
 ```
-![](https://github.com/Tobiadefami/datasynth/blob/main/terminal_gifs/pipeline.gif)
-Generates 20 samples of generated addresses with their normalized outputs strored in `sample-address.json`. Here is a [link](https://github.com/Tobiadefami/datasynth/blob/main/datasynth/datasets/sample-address.json) to the file
+![](https://github.com/Tobiadefami/fuxion/blob/main/terminal_gifs/pipeline.gif)
+Generates 20 samples of generated addresses with their normalized outputs strored in `sample-address.json`. Here is a [link](https://github.com/Tobiadefami/fuxion/blob/main/fuxion/datasets/sample-address.json) to the file
 
 
 

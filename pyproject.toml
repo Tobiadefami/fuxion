@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "datasynth"
-version = "0.1.0"
-description = "Synthetic dataset generation functions powered by GPT-3"
+name ="fuxion"
+version = "0.0.1"
+description = "Synthetic dataset generation and normalization functions powered by LLMs"
 authors = ["Oluwatobi Adefami <tobiadefami@gmail.com>"]
 license = "MIT"
 
@@ -14,6 +14,7 @@ typer = "^0.9.0"
 install = "^1.3.5"
 pytest = "^7.2.2"
 langchain-openai = "^0.0.5"
+ollama = "^0.1.8"
 
 [tool.poetry.dev-dependencies]
 black = "^23.1.0"
