@@ -1,3 +1,0 @@
-
-SEPARATOR = '\n\n'
-
