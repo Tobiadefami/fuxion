@@ -32,7 +32,7 @@ We recommend that you create a virtual environment before proceeding with the in
   ```   
 # Usage
 
-The process of creating useful synthetic data involves two main steps: data generation and normalization. fuxion provides a simple interface for both of these tasks. 
+The process of creating useful synthetic data involves two main steps: data generation and normalization. fuxion provides a simple interface for both of these tasks, and a pipeline that chains together both of these tasks. 
 
 ## Generation
 ```python
@@ -63,7 +63,7 @@ from fuxion.normalizers import NormalizerChain
 normalizer_chain = NormalizerChain.from_template(
     template_file="../templates/normalizer/address.template",
     temperature=0.0,
-    cache=True,
+    cache=False,
     verbose=True,
     model_name="gpt-3.5-turbo",
 )
@@ -81,8 +81,10 @@ fuxion can be used to generate synthetic data for rapid product testing amongst 
 
 ## Template Structure
 
-For each generation or normalization task, a template file is required to guide the llm on what to do. Below, we provide a brief overview of what the template file should look like for a given task (eg. ).
+For each generation or normalization task, a template file is required to guide the llm on what to do. Below, we provide a brief overview of what the template files should look like for a given generation and normalization task.
 
+
+##### Generator templates
 ```
 Generate a list of U.S. postal addresses separated by double newlines.  
 
@@ -104,7 +106,7 @@ List:
 > The same convention should be followed when creating subsequent templates for various data generation tasks.
 
 
-
+##### Normalizer templates
 
 ``` 
 
@@ -140,10 +142,43 @@ Output:
 
 
 ## Pipelines
-We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
+We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines` 
+
+```python
+
+from fuxion.pipelines import DatasetPipeline
+
+pipeline_chain = DatasetPipeline.from_template(
+    generator_template="examples/name_generator/generator.template",
+    normalizer_template="examples/name_generator/normalizer.template",
+    few_shot_file="examples/name_generator/few_shot.json",
+    dataset_name="name_pipeline",
+    k=20,
+    model_name="gpt-3.5-turbo",
+    cache=False,
+    verbose=True,
+    temperature=1.0,
+    batch_save=True,
+    batch_size = 3,
+)
+
+result = pipeline_chain.execute()
+print(result)
+```
+
+The pipeline chain takes in the `generator_template`, `normalizer_template`, `few shot_file` for few shot examples, `dataset_name`, number of datapoints to generate `k` and other parameters to generate a dataset including the `model_name` argument which specifies the llm to use for the generation and normalization process. The dataset is then saved in a json file with the dataset name provided. The user can choose to save the dataset in batches by setting `batch_save` to `True` and providing a `batch_size`.
 
 
+<b> Models supported </b>
+
+* gpt-3.5-turbo 
+* gpt-4
+* gpt-4-1106-preview 
+* gpt-3.5-turbo-instruct
 
 
-### TODO: 
-Make fuxion work seamlessly with other LLMs (locally hosted, or on other platforms like HuggingFace, etc.)
+### Future work: 
+
+fuxion is still a work in progress, but it is a good starting point for anyone looking to generate synthetic data for testing and training machine learning models. We plan to add more features to fuxion in the future, including a seamless functionality for accurate data generation and normalization using various llms (locally hosted or via the huggingface api). For now, OpenAI's models are the most functional and reliable. 
+
+Feel free to contribute to this project by opening an issue or a pull request. We would love to hear your thoughts on how we can improve fuxion!
