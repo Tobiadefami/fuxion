@@ -10,6 +10,7 @@ Preliminary models for name, price, and address standardization are available on
 * [Usage](#usage)
   * [Generation](#generation)
   * [Normalization](#normalization)
+  * [Template Structure](#template-structure)
   * [Pipelines](#pipelines)
 
 # Description
@@ -29,10 +30,58 @@ We recommend that you create a virtual environment before proceeding with the in
   ```bash
   export OPENAI_API_KEY = "your-key"
   ```   
+# Usage
+
+The process of creating useful synthetic data involves two main steps: data generation and normalization. fuxion provides a simple interface for both of these tasks. 
 
 ## Generation
+```python
 
-fuxion can be used to generate synthetic data for rapid product testing amongst other use cases. For each generator template, we have a prompt that instructs the chain on what to do. Below is an example of what the `address.template` file looks like
+from fuxion.generators import GeneratorChain
+from pprint import pprint
+
+chain = GeneratorChain.from_template(
+    template_file="examples/name_generator/generator.template",
+    temperature=0.0,
+    cache=False,
+    verbose=True,
+    model_name="gpt-3.5-turbo",
+)
+
+
+result = chain.execute(
+    few_shot_example_file="examples/name_generator/few_shot.json", sample_size=3
+)
+pprint(result)
+```
+
+## Normalization
+
+```python
+from fuxion.normalizers import NormalizerChain
+
+normalizer_chain = NormalizerChain.from_template(
+    template_file="../templates/normalizer/address.template",
+    temperature=0.0,
+    cache=True,
+    verbose=True,
+    model_name="gpt-3.5-turbo",
+)
+
+normalizer = normalizer_chain.execute(
+    example="John Doe street 1234, New York, NY 10001",
+)
+print(normalizer)
+
+```
+
+fuxion can be used to generate synthetic data for rapid product testing amongst other use cases. And this is easily achieved by passing the instructions and few shot examples as paths to the chain. The instructions are provided in the prompt template, and the few shot examples are provided in a json file. 
+
+
+
+## Template Structure
+
+For each generation or normalization task, a template file is required to guide the llm on what to do. Below, we provide a brief overview of what the template file should look like for a given task (eg. ).
 
 ```
 Generate a list of U.S. postal addresses separated by double newlines.  
@@ -56,11 +105,9 @@ List:
 
 
 
-## Normalization 
-
-It's often necessary to transform data into a standardized form before storing in a database. Using fuxion, you can make unstructured data useful by breaking it up into it's component parts and normalizing into a more structured form. Like the generator example, we have a normalization template that contains prompts that instructs the chain on how to achieve this. 
 
 ``` 
+
 Format the following address as a list of python dictionaries of the form:
 [
     { 
@@ -94,3 +141,9 @@ Output:
 
 ## Pipelines
 We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines.py` 
+
+
+
+
+### TODO: 
+Make fuxion work seamlessly with other LLMs (locally hosted, or on other platforms like HuggingFace, etc.)
