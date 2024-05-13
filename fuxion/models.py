@@ -11,6 +11,7 @@ HUGGING_FACE_API_KEY = os.getenv("HUGGINGFACE_TOKEN")
 MODEL_MAP = {
     "gpt-3.5-turbo": ChatOpenAI,
     "gpt-4": ChatOpenAI,
+    "gpt-4o": ChatOpenAI,
     "gpt-4-1106-preview": ChatOpenAI,
     "gpt-3.5-turbo-instruct": OpenAI,
     "llama2": Ollama,
@@ -32,8 +33,11 @@ def get_model(model_name: str, temperature: float, cache: bool, **kwargs) -> Ope
 
     if model_name in ["llama2", "mixtral:8x7b", "mistral:7b"]:
         return model_function(model=model_name)
-    
-    if model_name in ["HuggingFaceH4/zephyr-7b-beta","NousResearch/Hermes-2-Pro-Mistral-7B"]:
+
+    if model_name in [
+        "HuggingFaceH4/zephyr-7b-beta",
+        "NousResearch/Hermes-2-Pro-Mistral-7B",
+    ]:
         model_kwargs = {
             "max_new_tokens": 512,
             "top_k": 30,
