@@ -28,7 +28,7 @@ We recommend that you create a virtual environment before proceeding with the in
 - Add the following to your bashrc file and replace "your-key" with your OpenAI API key: 
   
   ```bash
-  export OPENAI_API_KEY = "your-key"
+  export OPENAI_API_KEY="your-key"
   ```   
 # Usage
 
