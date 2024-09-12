@@ -11,12 +11,16 @@ from langchain.prompts import PromptTemplate
 from fuxion.models import get_model
 
 optional_params = {"stop": ["]"]}
+MODEL_CONFIG = {
+    "gpt-4": optional_params,
+    "gpt-3.5-turbo": optional_params,
+}
 
 
 class NormalizerChain(BaseChain):
     model_name: str = "gpt-3.5-turbo"
     template: PromptTemplate = PrivateAttr()
-    chain = Field(LLMChain, required=False)
+    chain = Field(LLMChain)
     chain_type = "normalizer"
     temperature: float = 0.0
     cache: bool = True
@@ -30,7 +34,7 @@ class NormalizerChain(BaseChain):
             pattern = r"\{\{(\w+)\}\}"
             match = re.search(pattern, data)
             self.datatype = match.group(1)
-        # import ipdb; ipdb.set_trace()
+
         self.template = PromptTemplate(
             input_variables=[self.datatype],
             template=open(self.template_file).read(),
@@ -41,17 +45,28 @@ class NormalizerChain(BaseChain):
             raise ValueError(
                 f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
             )
-        self.chain = LLMChain(
-            prompt=self.template,
-            llm=get_model(
-                model_name=self.model_name,
-                temperature=self.temperature,
-                cache=self.cache,
-                model_kwargs=optional_params,
-            ),
-            verbose=self.verbose,
-        )
-
+        model_config = MODEL_CONFIG.get(self.model_name, {})
+        if model_config:
+            self.chain = LLMChain(
+                prompt=self.template,
+                llm=get_model(
+                    model_name=self.model_name,
+                    temperature=self.temperature,
+                    cache=self.cache,
+                    model_kwargs=model_config,
+                ),
+                verbose=self.verbose,
+                )
+        else:
+            self.chain = LLMChain(
+                prompt=self.template,
+                llm=get_model(
+                    model_name=self.model_name,
+                    temperature=self.temperature,
+                    cache=self.cache,
+                ),
+                verbose=self.verbose,
+                )
     def execute(
         self,
         example: str,
@@ -84,14 +99,31 @@ class NormalizerChain(BaseChain):
         return ["normalized"]
 
     def _call(self, inputs: dict[str, str]) -> dict[str, list[Any]]:
-        output = "[{" + self.chain.invoke(inputs)["text"] + "]"
 
+        raw_output = self.chain.invoke(inputs)["text"]
         try:
-            return {"normalized": ast.literal_eval(output)}
-        except json.JSONDecodeError:
-            print("Failed to normalize", output)
-            return {"normalized": []}
+            if self.model_name in MODEL_CONFIG:
+                output = "[{" + self.chain.invoke(inputs)["text"] + "]"
 
+                try:
+                    return {"normalized": ast.literal_eval(output)}
+                except json.JSONDecodeError:
+                    print("Failed to normalize", output)
+                    return {"normalized": []}
+            else:
+                cleaned_output = raw_output.lstrip('```python\n').rstrip('`')
+                if not cleaned_output.strip().startswith('['):
+                    cleaned_output = f"[{cleaned_output}]"
+
+                normalized = json.loads(cleaned_output)
+                if not isinstance(normalized, list):
+                    normalized = [normalized]
+
+                return {"normalized": normalized}
+        except (json.JSONDecodeError, ValueError) as e:
+            print("Failed to normalize", {e})
+            print(f"Raw output: {raw_output}")
+            return {"normalized": []}
 
 def main(
     normalizer_template: str,
@@ -109,7 +141,9 @@ def main(
         verbose=verbose,
         model_name=model_name,
     )
-    pprint(chain.invoke({chain.datatype: example}))
+    if chain.datatype:
+        result = chain.invoke({chain.datatype: example})
+        pprint(result)
 
 
 if __name__ == "__main__":
