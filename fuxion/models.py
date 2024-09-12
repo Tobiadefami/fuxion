@@ -13,7 +13,7 @@ OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION")
 MODEL_MAP = {
     "gpt-3.5-turbo": ChatOpenAI,
     "gpt-4": ChatOpenAI,
-    "gpt-4o": ChatOpenAI,
+    "gpt-4o": ChatOpen
     "gpt-4o-mini": ChatOpenAI,
 }
 
@@ -25,7 +25,6 @@ def get_model(model_name: str, temperature: float, cache: bool, **kwargs) -> Ope
         raise ValueError(f"Model {model_name} not found in model map, use one of {MODEL_MAP.keys()}")
     if cache:
         set_llm_cache(SQLiteCache(database_path=".langchain.db"))
-
 
     return model_function(
         model=model_name,
