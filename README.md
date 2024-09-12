@@ -173,8 +173,8 @@ The pipeline chain takes in the `generator_template`, `normalizer_template`, `fe
 
 * gpt-3.5-turbo 
 * gpt-4
-* gpt-4-1106-preview 
-* gpt-3.5-turbo-instruct
+* gpt-4o
+* gpt-4o-mini
 
 
 ### Future work: 
