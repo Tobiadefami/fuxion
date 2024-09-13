@@ -13,7 +13,7 @@ OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION")
 MODEL_MAP = {
     "gpt-3.5-turbo": ChatOpenAI,
     "gpt-4": ChatOpenAI,
-    "gpt-4o": ChatOpen
+    "gpt-4o": ChatOpenAI,
     "gpt-4o-mini": ChatOpenAI,
 }
 
