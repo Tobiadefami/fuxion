@@ -11,8 +11,7 @@ Preliminary models for name, price, and address standardization are available on
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Generation](#generation)
-  - [Normalization](#normalization)
+  - [Generation and Normalization](#generation-and-normalization)
   - [Template Structure](#template-structure)
   - [Pipelines](#pipelines)
 
