@@ -8,8 +8,9 @@ import typer
 from rich import print
 import langchain
 from fuxion.dynamic_models import create_dynamic_model
+from fuxion.models import get_model
 
-langchain.llm_cache = SQLiteCache("llm_cache.db")
+
 
 
 
@@ -23,13 +24,17 @@ class GeneratorChain:
         verbose: bool = False,
         cache: bool = False
     ):
+        self.cache = cache
+        if self.cache:
+            langchain.llm_cache = SQLiteCache("llm_cache.db")
         self.template = PromptTemplate.from_file(template_file, input_variables=["few_shot"])
-        self.model = ChatOpenAI(model=model_name, temperature=temperature)
+        self.model = get_model(model_name=model_name, temperature=temperature)
         self.GeneratedItem = create_dynamic_model(output_structure)
         self.GeneratedOutput = create_model("GeneratedOutput",
             items=(List[self.GeneratedItem], Field(description="List of generated items")))
         self.structured_llm = self.model.with_structured_output(self.GeneratedOutput)
         self.verbose = verbose
+
 
     def generate(self, few_shot: str) -> Any:
         prompt = self.template.format(few_shot=few_shot)
