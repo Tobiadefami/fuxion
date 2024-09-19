@@ -50,13 +50,15 @@ class DatasetPipeline:
             generated_content = self.generator.generate(few_shot)
 
             for item in generated_content.items:
-                output = {
-                    "raw": str(item),
-                    "structured": item.dict()
-                }
-                outputs.append(output)
-                pbar.update(1)
-                if len(outputs) >= self.k:
+                if len(outputs) < self.k:
+                    output = {
+                        "raw": str(item),
+                        "structured": item.dict()
+                    }
+                    outputs.append(output)
+                    pbar.update(1)
+                # if len(outputs) >= self.k:
+                else:
                     break
 
 
