@@ -38,55 +38,26 @@ We recommend that you create a virtual environment before proceeding with the in
 
 # Usage
 
-The process of creating useful synthetic data involves two main steps: data generation and normalization. fuxion provides a simple interface for both of these tasks, and a pipeline that chains together both of these tasks.
+The process of creating useful synthetic data involves two main steps: data generation and normalization. fuxion now combines data generation and normalization into a single streamlined process using structured output.
 
-## Generation
+## Generation and Normalization
 
-```python
+The generation process in fuxion uses a template file to guide the LLM in creating synthetic data. This template file contains instructions and placeholders for few-shot examples. Here's an overview of how generation works:
 
-from fuxion.generators import GeneratorChain
-from pprint import pprint
+1. Create a template file with instructions for the type of data you want to generate.
+2. Prepare a few-shot example file in JSON format.
+3. Define the output structure for your data.
+4. Use the `DatasetPipeline` class to generate and normalize data in one step.
 
-chain = GeneratorChain.from_template(
-    template_file="examples/name_generator/generator.template",
-    temperature=0.0,
-    cache=False,
-    verbose=True,
-    model_name="gpt-3.5-turbo",
-)
+The template file, few-shot examples, and output structure work together to produce high-quality, structured synthetic data.
 
-
-result = chain.execute(
-    few_shot_example_file="examples/name_generator/few_shot.json", sample_size=3
-)
-pprint(result)
-```
-
-## Normalization
-
-```python
-from fuxion.normalizers import NormalizerChain
-
-normalizer_chain = NormalizerChain.from_template(
-    template_file="../templates/normalizer/address.template",
-    temperature=0.0,
-    cache=False,
-    verbose=True,
-    model_name="gpt-3.5-turbo",
-)
-
-normalizer = normalizer_chain.execute(
-    example="John Doe street 1234, New York, NY 10001",
-)
-print(normalizer)
-
-```
+This structure guides the LLM to produce data in the specified format, ensuring consistency and proper typing.
 
 fuxion can be used to generate synthetic data for rapid product testing amongst other use cases. And this is easily achieved by passing the instructions and few shot examples as paths to the chain. The instructions are provided in the prompt template, and the few shot examples are provided in a json file.
 
 ## Template Structure
 
-For each generation or normalization task, a template file is required to guide the llm on what to do. Below, we provide a brief overview of what the template files should look like for a given generation and normalization task.
+For each generation task, a template file is required to guide the LLM on what to do. Below, we provide a brief overview of what the template files should look like.
 
 ##### Generator templates
 
@@ -116,7 +87,7 @@ In the latest version of fuxion, normalization is integrated directly into the p
 
 ### Creating an Output Structure
 
-The `output_structure` is a dictionary that defines the desired format for your normalized data. Here's how to create one:
+The output structure is a key component in fuxion's generation process. It defines the format and types of the generated data, effectively combining generation and normalization. Here's an example of how to define an output structure:
 
 ```python
 output_structure = {
@@ -158,6 +129,8 @@ We can train machine learning models on the combination of synthetically generat
 
 The latest version of fuxion simplifies the normalization process by incorporating it directly into the pipeline using structured output. This removes the need for a separate normalization template, making it easier for users.
 
+The `DatasetPipeline` class is the primary interface for generating synthetic datasets. It handles both generation and normalization in a single process. Here's an example of how to use it:
+
 ```python
 from fuxion.pipelines import DatasetPipeline
 from rich import print
@@ -186,13 +159,9 @@ result = pipeline_chain.execute()
 print(result)
 ```
 
-The pipeline chain now takes an `output_structure` dictionary that specifies the desired format for the normalized data. This replaces the previous `normalizer_template` parameter, simplifying the process and reducing complexity.
-
-The `output_structure` dictionary defines the fields and their expected types for the normalized output. The pipeline uses this structure to guide the LLM in formatting the generated data correctly.
-
-Other parameters remain similar to the previous version, including `generator_template`, `few_shot_file`, `dataset_name`, number of datapoints to generate `k`, and other configuration options.
-
-The dataset is then saved in a JSON file with the provided dataset name.
+This pipeline generates a dataset of 5 names, formatted according to the specified output structure.
+This replaces the previous `normalizer_template` parameter, simplifying the process and reducing complexity.
+The generated data is automatically saved to a file named `name_dataset.json` in the `datasets` directory.
 
 <b> Models supported </b>
 
