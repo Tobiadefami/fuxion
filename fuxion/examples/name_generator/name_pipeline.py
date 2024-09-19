@@ -1,18 +1,24 @@
 from fuxion.pipelines import DatasetPipeline
+from rich import print
 
+output_structure = {
+    "title": str ,
+    "given": str,
+    "middle": str ,
+    "surname": str,
+    "suffix": str
+}
 
-pipeline_chain = DatasetPipeline.from_template(
+pipeline_chain = DatasetPipeline(
     generator_template="examples/name_generator/generator.template",
-    normalizer_template="examples/name_generator/normalizer.template",
     few_shot_file="examples/name_generator/few_shot.json",
+    output_structure=output_structure,
     dataset_name="name_pipeline",
-    k=20,
-    model_name="gpt-3.5-turbo",
-    cache=True,
+    k=5,
+    model_name="gpt-4o",
+    cache=False,
     verbose=True,
     temperature=1.0,
-    batch_save=True,
-    batch_size = 3,
 )
 
 result = pipeline_chain.execute()
