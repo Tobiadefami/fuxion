@@ -53,8 +53,6 @@ The template file, few-shot examples, and output structure work together to prod
 
 This structure guides the LLM to produce data in the specified format, ensuring consistency and proper typing.
 
-fuxion can be used to generate synthetic data for rapid product testing amongst other use cases. And this is easily achieved by passing the instructions and few shot examples as paths to the chain. The instructions are provided in the prompt template, and the few shot examples are provided in a json file.
-
 ## Template Structure
 
 For each generation task, a template file is required to guide the LLM on what to do. Below, we provide a brief overview of what the template files should look like.
@@ -125,8 +123,6 @@ This structure guides the LLM in formatting the generated data, ensuring consist
 
 ## Pipelines
 
-We can train machine learning models on the combination of synthetically generated data and their normalized format. This is where we use `pipelines`.
-
 The latest version of fuxion simplifies the normalization process by incorporating it directly into the pipeline using structured output. This removes the need for a separate normalization template, making it easier for users.
 
 The `DatasetPipeline` class is the primary interface for generating synthetic datasets. It handles both generation and normalization in a single process. Here's an example of how to use it:
@@ -162,6 +158,9 @@ print(result)
 This pipeline generates a dataset of 5 names, formatted according to the specified output structure.
 This replaces the previous `normalizer_template` parameter, simplifying the process and reducing complexity.
 The generated data is automatically saved to a file named `name_dataset.json` in the `datasets` directory.
+
+fuxion can be used to generate synthetic data for various use cases, including rapid product testing and machine learning model training.
+By customizing the template, few-shot examples, and output structure, you can create diverse and realistic datasets tailored to your specific needs.
 
 <b> Models supported </b>
 
