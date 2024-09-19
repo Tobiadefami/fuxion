@@ -1,106 +1,69 @@
-from typing import ClassVar
-from pydantic import Field, PrivateAttr
-from langchain.chains import LLMChain
+from typing import List, Optional, Dict, Any, Type
+from pydantic import BaseModel, Field, create_model
 from langchain.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+from langchain.cache import SQLiteCache
 import typer
-from pprint import pprint
-from fuxion.base import BaseChain
-from fuxion.few_shot import populate_few_shot, generate_population
-from fuxion.settings import SEPARATOR
-from fuxion.models import get_model
+from rich import print
+import langchain
+from fuxion.dynamic_models import create_dynamic_model
 
-separator = SEPARATOR
+langchain.llm_cache = SQLiteCache("llm_cache.db")
 
 
-class GeneratorChain(BaseChain):
-    model_name: str = "gpt-3.5-turbo"
-    template: PromptTemplate = PrivateAttr()
-    chain = Field(LLMChain, required=False)
-    chain_type: ClassVar[str] = "generator"
-    temperature: float = 0.0
-    cache: bool = False
-    verbose: bool = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.template = PromptTemplate(
-            input_variables=["few_shot"],
-            template=open(self.template_file).read(),
-            validate_template=False,
-            template_format="jinja2",
-        )
-        if self.temperature > 2.0:
-            raise ValueError(
-                f"temperature:{self.temperature} is greater than the maximum of 2-'temperature'"
-            )
-        self.chain = LLMChain(
-            prompt=self.template,
-            llm=get_model(
-                temperature=self.temperature,
-                cache=self.cache,
-                model_name=self.model_name,
-            ),
-            verbose=self.verbose,
-        )
-
-    def execute(
+class GeneratorChain:
+    def __init__(
         self,
-        few_shot_example_file: str,
-        sample_size: int = 3,
+        template_file: str,
+        output_structure: Dict[str, Any],
+        model_name: str = "gpt-3.5-turbo",
+        temperature: float = 0.7,
+        verbose: bool = False,
+        cache: bool = False
     ):
-        population = generate_population(few_shot_example_file=few_shot_example_file)
-        few_shot = populate_few_shot(population=population, sample_size=sample_size)
-        result = self.chain.invoke({"few_shot": few_shot})
+        self.template = PromptTemplate.from_file(template_file, input_variables=["few_shot"])
+        self.model = ChatOpenAI(model=model_name, temperature=temperature)
+        self.GeneratedItem = create_dynamic_model(output_structure)
+        self.GeneratedOutput = create_model("GeneratedOutput",
+            items=(List[self.GeneratedItem], Field(description="List of generated items")))
+        self.structured_llm = self.model.with_structured_output(self.GeneratedOutput)
+        self.verbose = verbose
+
+    def generate(self, few_shot: str) -> Any:
+        prompt = self.template.format(few_shot=few_shot)
+        messages = [HumanMessage(content=prompt)]
+
+        if self.verbose:
+            print(f"Prompt: {prompt}")
+
+        result = self.structured_llm.invoke(messages)
+
+        if self.verbose:
+            print(f"Raw output: {result}")
+
         return result
 
-    @classmethod
-    def from_template(
-        cls,
-        *args,
-        **kwargs,
-    ):
-        return super().from_name(
-            *args,
-            class_suffix="Generator",
-            base_cls=GeneratorChain,
-            chain_type="generator",
-            **kwargs,
-        )
-
-    @property
-    def input_keys(self) -> list[str]:
-        return self.chain.input_keys
-
-    @property
-    def output_keys(self) -> list[str]:
-        return ["generated"]
-
-    def _call(self, inputs: dict[str, str]) -> dict[str, list[str]]:
-        generated_items = self.chain.invoke(input=inputs)["text"].split(separator)
-        filtered_items = [item for item in generated_items if item.strip()]
-        return {"generated": filtered_items}
-
-
 def main(
-    generator_template: str,
-    few_shot_example_file: str,
-    sample_size: int = 3,
-    temperature: float = 0.5,
-    cache: bool = False,
-    verbose: bool = True,
+    template_file: str,
+    few_shot_example: str,
+    output_structure: str,
     model_name: str = "gpt-3.5-turbo",
+    temperature: float = 0.7,
+    verbose: bool = False,
+    cache: bool = False
 ):
-    population = generate_population(few_shot_example_file=few_shot_example_file)
-    few_shot = populate_few_shot(population=population, sample_size=sample_size)
-    chain = GeneratorChain.from_template(
-        generator_template,
-        temperature=temperature,
-        cache=cache,
-        verbose=verbose,
+    structured_dict = eval(output_structure)
+    chain = GeneratorChain(
+        template_file=template_file,
+        output_structure=structured_dict,
         model_name=model_name,
+        temperature=temperature,
+        verbose=verbose
     )
-    pprint(chain.invoke(few_shot))
-
+    output = chain.generate(few_shot_example)
+    print(output)
 
 if __name__ == "__main__":
     typer.run(main)
