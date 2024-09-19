@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, create_model
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
-from langchain.cache import SQLiteCache
+from langchain_community.cache import SQLiteCache
 import typer
 from rich import print
 import langchain
@@ -40,13 +40,10 @@ class GeneratorChain:
         prompt = self.template.format(few_shot=few_shot)
         messages = [HumanMessage(content=prompt)]
 
-        if self.verbose:
-            print(f"Prompt: {prompt}")
+        # if self.verbose:
+        #     print(f"Prompt: {prompt}")
 
         result = self.structured_llm.invoke(messages)
-
-        if self.verbose:
-            print(f"Raw output: {result}")
 
         return result
 
