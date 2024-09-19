@@ -44,23 +44,28 @@ class DatasetPipeline:
     def execute(self) -> Dict[str, List[Dict[str, Any]]]:
         population = generate_population(few_shot_example_file=self.few_shot_file)
         outputs = []
-
+        pbar = tqdm(total=self.k, desc="Generating Dataset",  unit="items")
         while len(outputs) < self.k:
             few_shot = populate_few_shot(population=population, sample_size=self.sample_size)
             generated_content = self.generator.generate(few_shot)
 
             for item in generated_content.items:
-                outputs.append(item.dict())
+                output = {
+                    "raw": str(item),
+                    "structured": item.dict()
+                }
+                outputs.append(output)
+                pbar.update(1)
                 if len(outputs) >= self.k:
                     break
 
 
             if self.batch_save and len(outputs) % self.batch_size == 0:
                 self._save_batch(outputs[-self.batch_size:], len(outputs) // self.batch_size)
-
+        pbar.close()
         results = {
             "dataset": {
-                "outputs": outputs,
+                "outputs": outputs[:self.k],
                 "generator_prompt": self.generator.template.template,
             }
         }
